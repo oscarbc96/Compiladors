@@ -1,0 +1,18 @@
+x := 2.3
+i := 5
+z := i * (x + i) - i / 7.2
+s := "Hola"
+
+// Un comentari
+x
+i
+z
+s
+17 + (3 * 1.0)
+
+/*
+* comentari multilinea
+*/
+
+i + i * 2
+s + (s + i) + x
