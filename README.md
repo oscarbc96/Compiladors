@@ -39,8 +39,10 @@ $ ./prac1 INPUT_FILE OUTPUT_FILE
 ### Types
 **int**
 `a := 2`
+
 **float**
 `a := 2.0`
+
 **string**
 `a := "test"`
 
@@ -53,12 +55,16 @@ $ ./prac1 INPUT_FILE OUTPUT_FILE
 - `mod` Module
 #### Int / float operations 
 Any operation with floats returns the result as a float.
+
 `2 + 4 = 6`
+
 `2.0 + 4.0 = 6.0`
+
 `2 + 4.0 = 6.0`
 
 #### String add operation 
 `"test" + 1234 = "test1234"`
+
 `"test" + "-" + "test" = "test-test"`
 
 ### Comparators
@@ -72,9 +78,11 @@ Any operation with floats returns the result as a float.
 Returns 1 if true, otherwise 0.
 
 #### String comparation 
-str1 == str2
+`str1 == str2`
 If Return value < 0 then it indicates str1 is less than str2.
+
 If Return value > 0 then it indicates str2 is less than str1.
+
 If Return value = 0 then it indicates str1 is equal to str2.
 
 ### Functions
