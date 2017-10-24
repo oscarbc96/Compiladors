@@ -1,4 +1,4 @@
-#include "../prac1types.h"
+#include "../prac2types.h"
 /* Copyright 1988 by GeoMaker Software                                      */
 /* Written by Mark Grand                                                    */
 

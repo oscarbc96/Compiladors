@@ -1,5 +1,5 @@
-#ifndef prac1typesH
-#define prac1typesH
+#ifndef prac2typesH
+#define prac2typesH
 
 typedef enum {BINT, BFLOAT, BSTRING} type;
 

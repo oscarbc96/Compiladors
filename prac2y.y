@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "prac1y.h"
+#include "prac2y.h"
 #include "./symtab/symtab.h"
 #include <math.h>
 #include <string.h>
@@ -17,7 +17,7 @@ extern void yyerror(char*);
 %}
 
 %code requires {
-  #include "prac1types.h"
+  #include "prac2types.h"
 }
 
 %error-verbose

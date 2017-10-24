@@ -1,5 +1,5 @@
-#ifndef prac1H
-#define prac1H
+#ifndef prac2H
+#define prac2H
 
 extern int init_analisi_lexic(char*);
 extern int init_analisi_sintactic(char*);

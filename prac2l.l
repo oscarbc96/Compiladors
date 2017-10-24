@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "prac1y.h"
-#include "prac1types.h"
+#include "prac2y.h"
+#include "prac2types.h"
 
 extern FILE *yyin;
 

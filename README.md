@@ -1,4 +1,4 @@
-# Compiladors - Practica 1
+# Compiladors - Practica 2
 
 Primera practica de compiladors. Desenvolupada sota l'entorn proporcionat per docker. 
 
@@ -11,7 +11,7 @@ Primera practica de compiladors. Desenvolupada sota l'entorn proporcionat per do
 **Docker**
 ```sh
 $ docker build . -t compiladors
-$ docker run -v $(pwd):/prac1 -it compiladors /bin/sh
+$ docker run -v $(pwd):/prac2 -it compiladors /bin/sh
 ```
 **Build**
 ```sh
@@ -23,17 +23,17 @@ $ make clean
 ```
 **Run**
 ```sh
-$ ./prac1 INPUT_FILE OUTPUT_FILE
+$ ./prac2 INPUT_FILE OUTPUT_FILE
 ```
 ## Exemples
 
 |  Nom  | Descripció |  Comanda  |
 | - | - | - |
-|  `default`  | Exemple de l'enunciat | `$ ./prac1 ./inputs/default.txt ./outputs/default.txt` |
-|  `arithmetic`  | Exemple d'operacions aritmetiques | `$ ./prac1 ./inputs/arithmetic.txt ./outputs/arithmetic.txt` |
-|  `commentaries`  | Exemple de comentaris | `$ ./prac1 ./inputs/commentaries.txt ./outputs/commentaries.txt` |
-|  `comparators`  | Exemple de comparacions | `$ ./prac1 ./inputs/comparators.txt ./outputs/comparators.txt` |
-|  `functions`  | Exemple de funcions | `$ ./prac1 ./inputs/functions.txt ./outputs/functions.txt` |
+|  `default`  | Exemple de l'enunciat | `$ ./prac2 ./inputs/default.txt ./outputs/default.txt` |
+|  `arithmetic`  | Exemple d'operacions aritmetiques | `$ ./prac2 ./inputs/arithmetic.txt ./outputs/arithmetic.txt` |
+|  `commentaries`  | Exemple de comentaris | `$ ./prac2 ./inputs/commentaries.txt ./outputs/commentaries.txt` |
+|  `comparators`  | Exemple de comparacions | `$ ./prac2 ./inputs/comparators.txt ./outputs/comparators.txt` |
+|  `functions`  | Exemple de funcions | `$ ./prac2 ./inputs/functions.txt ./outputs/functions.txt` |
 
 ## Documentació
 ### Types
