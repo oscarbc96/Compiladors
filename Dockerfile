@@ -2,8 +2,8 @@ FROM alpine
 
 RUN apk add --update gcc flex bison make libc-dev flex-dev
 
-WORKDIR /prac2
+WORKDIR /prac
 
-VOLUME /prac2
+VOLUME /prac
 
 CMD ["/bin/sh"]

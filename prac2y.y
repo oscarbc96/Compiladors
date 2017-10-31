@@ -12,7 +12,9 @@
 extern FILE *yyout;
 extern int yylineno;
 extern char* yytext;
-extern void yyerror(char*);
+extern int yylex();
+extern void yyerror(const char*);
+pmode current_mode;
 
 %}
 
@@ -26,6 +28,7 @@ extern void yyerror(char*);
   uniontype utype;
 }
 
+%token <utype> MODE
 %token <utype> UTYPE
 %token <utype> ID
 %token NEWLINE
@@ -44,16 +47,34 @@ extern void yyerror(char*);
 %type <utype> statement
 %type <utype> expression
 
+
 %left ADD SUBSTRACT
 %left MULTIPLY DIVIDE MOD
 %left POW COMP
 %left PARENTHESIS_OPEN PARENTHESIS_CLOSE
+%left MODE
 
+%start start
 %%
 
-root:
-    root statement | statement;
+start: calc root;
 
+calc: MODE {
+  current_mode = $1.intValue;
+
+  switch(current_mode){
+    case CALC:
+      printf("BISON: Starting in mode CALC\n");
+      break;
+    case PRGM:
+      printf("BISON: Starting in mode PRGM\n");
+      break;
+  }
+};
+
+root:
+  root statement | statement;
+ 
 statement : ID ASSIGN expression NEWLINE{
   sym_enter($1.stringValue, &$3);
   switch($3.type){
@@ -382,7 +403,7 @@ int end_analisi_sintactic(){
   return error;
 }
 
-void yyerror(char *explanation){
+void yyerror(const char *explanation){
   fprintf(stderr,"BISON ERROR: %s, in line %d \n",explanation,yylineno);
   exit(EXIT_FAILURE);
 }

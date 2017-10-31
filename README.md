@@ -11,7 +11,7 @@ Primera practica de compiladors. Desenvolupada sota l'entorn proporcionat per do
 **Docker**
 ```sh
 $ docker build . -t compiladors
-$ docker run -v $(pwd):/prac2 -it compiladors /bin/sh
+$ docker run -v $(pwd):/prac -it compiladors /bin/sh
 ```
 **Build**
 ```sh

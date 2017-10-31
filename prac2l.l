@@ -53,10 +53,23 @@ int error(char *msg){
   exit(EXIT_FAILURE);
 }
 
+int return_mode(pmode m){
+  switch(m){
+    case CALC:
+      printf("FLEX: Detected mode CALC\n");
+      break;
+    case PRGM:
+      printf("FLEX: Detected mode PRGM\n");
+      break;
+  }
+  yylval.utype.intValue = m;
+  return MODE;
+}
+
 #define RETURN(t) return return_token(t, #t)
 #define RETURN_UTYPE(u) return return_utype(u)
 #define ERROR(e) return error(e)
-
+#define RETURN_MODE(m) return return_mode(m)
 %}
 
 %option yylineno
@@ -64,18 +77,22 @@ int error(char *msg){
 
 %x COMMENT
 %x STRING
+%x CALCMODE
 
 id [a-zA-Z]+[a-zA-Z0-9]*
 int (-?[1-9]+[0-9]*|0)
 float (-[1-9]\.[0-9]+|-0\.[1-9]+[0-9]*|[0-9]+\.[0-9]+|0\.0)
 string (?:[^\"\\\n]|\\.)*
 oneline_comment \/\/.*
-multiline_comment_open \/\*(?:[^\*\/\n])*
-multiline_comment_body \\*[^*]*\\*+(?:[^/*][^*]*\\*+)*
-multiline_comment_close \/
 space [ \t\r]*
  
 %%
+
+"calc"                              if(yylineno == 1) BEGIN(CALCMODE); else RETURN(ID);
+<CALCMODE>"on"                      RETURN_MODE(CALC);
+<CALCMODE>"off"                     RETURN_MODE(PRGM);
+<CALCMODE>"\n"                      BEGIN(INITIAL); RETURN(NEWLINE);
+<CALCMODE>.
 
 "+"                                 RETURN(ADD);
 "-"                                 RETURN(SUBSTRACT);
@@ -101,8 +118,8 @@ space [ \t\r]*
 <STRING>{string}                    RETURN_UTYPE(BSTRING);
 <STRING>"\""                        BEGIN(INITIAL);
 "\n"                                RETURN(NEWLINE); 
-\/\*                                {printf("FLEX: MULTILINE COMMENT BEGIN -> "); BEGIN(COMMENT);}
-<COMMENT>\*\/                       {printf("FLEX: MULTILINE COMMENT END -> "); BEGIN(INITIAL);}
+\/\*                                printf("FLEX: MULTILINE COMMENT BEGIN -> "); BEGIN(COMMENT);
+<COMMENT>\*\/                       printf("FLEX: MULTILINE COMMENT END -> "); BEGIN(INITIAL);
 <COMMENT>\n
 <COMMENT>.
 <COMMENT><<EOF>>                    ERROR("unterminated comment"); 
