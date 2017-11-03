@@ -44,6 +44,10 @@ int return_utype(type t) {
       yylval.utype.stringValue = strdup(yytext); 
       printf("FLEX: STRING yytex: %s -> %s\n", yytext, yylval.utype.stringValue); 
       break;
+    case BBOOL:
+      yylval.utype.boolValue = strcmp(yytext, "true") == 0; 
+      printf("FLEX: BOOL yytex: %s -> %s\n", yytext, yylval.utype.boolValue ? "true" : "false"); 
+      break;
   }
   return UTYPE;
 }
@@ -94,6 +98,25 @@ space [ \t\r]*
 <CALCMODE>"\n"                      BEGIN(INITIAL); RETURN(NEWLINE);
 <CALCMODE>.
 
+"true"                              RETURN_UTYPE(BBOOL);
+"false"                             RETURN_UTYPE(BBOOL);
+"not"                               RETURN(NOT);
+"and"                               RETURN(AND);
+"or"                                RETURN(OR);
+
+"if"                                RETURN(IF);
+"then"                              RETURN(THEN);
+"else"                              RETURN(ELSE);
+"elsif"                             RETURN(ELSIF);
+"fi"                                RETURN(FI);
+"while"                             RETURN(WHILE);
+"do"                                RETURN(DO);
+"done"                              RETURN(DONE);
+"repeat"                            RETURN(REPEAT);
+"until"                             RETURN(UNTIL);
+"for"                               RETURN(FOR);
+"in"                                RETURN(IN);
+
 "+"                                 RETURN(ADD);
 "-"                                 RETURN(SUBSTRACT);
 "**"                                RETURN(POW);
@@ -104,7 +127,7 @@ space [ \t\r]*
 "<"                                 RETURN(COMP);
 ">="                                RETURN(COMP);
 "<="                                RETURN(COMP);
-"=="                                RETURN(COMP);
+"="                                 RETURN(COMP);
 "!="                                RETURN(COMP);
 "sqrt"                              RETURN(FUNC);
 "log"                               RETURN(FUNC);

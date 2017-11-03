@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "prac2y.h"
 #include "./symtab/symtab.h"
+#include "./operations.h"
 #include <math.h>
 #include <string.h>
 
@@ -31,6 +32,21 @@ pmode current_mode;
 %token <utype> MODE
 %token <utype> UTYPE
 %token <utype> ID
+%token NOT
+%token AND
+%token OR
+%token IF
+%token THEN
+%token ELSE
+%token ELSIF
+%token FI
+%token WHILE
+%token DO
+%token DONE
+%token REPEAT
+%token UNTIL
+%token FOR
+%token IN
 %token NEWLINE
 %token ASSIGN
 %token ADD
@@ -44,13 +60,17 @@ pmode current_mode;
 %token <utype> FUNC
 %token <utype> COMP
 
+%type <utype> primitive
 %type <utype> statement
 %type <utype> expression
-
+%type <utype> boolean_expression
 
 %left ADD SUBSTRACT
 %left MULTIPLY DIVIDE MOD
 %left POW COMP
+%left NOT
+%left AND
+%left OR
 %left PARENTHESIS_OPEN PARENTHESIS_CLOSE
 %left MODE
 
@@ -74,7 +94,69 @@ calc: MODE {
 
 root:
   root statement | statement;
- 
+
+statement : if_statement;
+
+if_statement : IF PARENTHESIS_OPEN boolean_expression PARENTHESIS_CLOSE THEN root elsif_else_fi {
+  if ($3.type != BBOOL) {
+    yyerror("The value between parentheses must be a boolean expression");
+  } else {
+    printf("BISON: IF %s\n", $3.boolValue ? "true" : "false");
+    fprintf(yyout, "IF %s\n", $3.boolValue ? "true" : "false");
+  }
+};
+
+
+elsif_else_fi : ELSIF PARENTHESIS_OPEN boolean_expression PARENTHESIS_CLOSE THEN root elsif_else_fi {
+  if ($3.type != BBOOL) {
+    yyerror("The value between parentheses must be a boolean expression");
+  } else {
+    printf("BISON: ELSIF %s\n", $3.boolValue ? "true" : "false");
+    fprintf(yyout, "ELSIF %s\n", $3.boolValue ? "true" : "false");
+  }
+};
+
+elsif_else_fi : ELSE root if_end {
+  printf("BISON: ELSE\n");
+  fprintf(yyout, "ELSE\n");
+};
+
+elsif_else_fi: if_end;
+
+if_end : FI {
+  printf("BISON: FI\n");
+  fprintf(yyout, "FI\n");
+};
+
+boolean_expression : expression;
+
+boolean_expression: NOT boolean_expression {
+  if($2.type == BBOOL){
+    $$.type = BBOOL;
+    $$.boolValue = !$2.boolValue;
+  }else{
+    yyerror("bad not");
+  }
+};
+
+boolean_expression: boolean_expression AND boolean_expression {
+  if($1.type == BBOOL && $3.type == BBOOL){
+    $$.type = BBOOL;
+    $$.boolValue = $1.boolValue && $3.boolValue;
+  }else{
+    yyerror("bad and");
+  }
+};
+
+boolean_expression: boolean_expression OR boolean_expression {
+  if($1.type == BBOOL && $3.type == BBOOL){
+    $$.type = BBOOL;
+    $$.boolValue = $1.boolValue || $3.boolValue;
+  }else{
+    yyerror("bad or");
+  }
+};
+
 statement : ID ASSIGN expression NEWLINE{
   sym_enter($1.stringValue, &$3);
   switch($3.type){
@@ -89,6 +171,10 @@ statement : ID ASSIGN expression NEWLINE{
     case BSTRING:
       printf("BISON: ID: %s TYPE: STRING VALUE: %s\n",$1.stringValue, $3.stringValue);
       fprintf(yyout, "ID: %s TYPE: STRING VALUE: %s\n",$1.stringValue, $3.stringValue);
+      break;
+    case BBOOL:
+      printf("BISON: ID: %s TYPE: BOOL VALUE: %s\n",$1.stringValue, $3.boolValue ? "true" : "false");
+      fprintf(yyout, "ID: %s TYPE: BOOL VALUE: %s\n",$1.stringValue, $3.boolValue ? "true" : "false");
       break;
   }
 };
@@ -106,6 +192,10 @@ statement : expression NEWLINE {
     case BSTRING:
       printf("BISON: EXPRESSION: TYPE: STRING VALUE: %s\n",$1.stringValue);
       fprintf(yyout, "EXPRESSION: TYPE: STRING VALUE: %s\n",$1.stringValue);
+      break;
+    case BBOOL:
+      printf("BISON: EXPRESSION: TYPE: TYPE: BOOL VALUE: %s\n",$1.boolValue ? "true" : "false");
+      fprintf(yyout, "EXPRESSION: TYPE: TYPE: BOOL VALUE: %s\n",$1.boolValue ? "true" : "false");
       break;
   };
 };
@@ -139,64 +229,64 @@ expression: FUNC PARENTHESIS_OPEN expression PARENTHESIS_CLOSE {
 
 expression: expression COMP expression {
   printf("BISON: Performing comparation\n");
-  $$.type = BINT;
+  $$.type = BBOOL;
   if($1.type == BSTRING && $3.type == BSTRING){
-    $$.intValue = strcmp($1.stringValue, $3.stringValue);
+    $$.boolValue = strcmp($1.stringValue, $3.stringValue) == 0;
   }else if($1.type == BINT && $3.type == BINT){
     if (strcmp($2.stringValue, ">") == 0) {
-      $$.intValue = $1.intValue > $3.intValue;
+      $$.boolValue = $1.intValue > $3.intValue;
     } else if (strcmp($2.stringValue, "<") == 0) {
-      $$.intValue = $1.intValue < $3.intValue;
+      $$.boolValue = $1.intValue < $3.intValue;
     } else if (strcmp($2.stringValue, ">=") == 0) {
-      $$.intValue = $1.intValue >= $3.intValue;
+      $$.boolValue = $1.intValue >= $3.intValue;
     } else if (strcmp($2.stringValue, "<=") == 0) {
-      $$.intValue = $1.intValue <= $3.intValue;
-    } else if (strcmp($2.stringValue, "==") == 0) {
-      $$.intValue = $1.intValue == $3.intValue;
+      $$.boolValue = $1.intValue <= $3.intValue;
+    } else if (strcmp($2.stringValue, "=") == 0) {
+      $$.boolValue = $1.intValue == $3.intValue;
     } else if (strcmp($2.stringValue, "!=") == 0) {
-      $$.intValue = $1.intValue != $3.intValue;
+      $$.boolValue = $1.intValue != $3.intValue;
     }
   }else if($1.type == BFLOAT && $3.type == BFLOAT){
     if (strcmp($2.stringValue, ">") == 0) {
-      $$.intValue = $1.floatValue > $3.floatValue;
+      $$.boolValue = $1.floatValue > $3.floatValue;
     } else if (strcmp($2.stringValue, "<") == 0) {
-      $$.intValue = $1.floatValue < $3.floatValue;
+      $$.boolValue = $1.floatValue < $3.floatValue;
     } else if (strcmp($2.stringValue, ">=") == 0) {
-      $$.intValue = $1.floatValue >= $3.floatValue;
+      $$.boolValue = $1.floatValue >= $3.floatValue;
     } else if (strcmp($2.stringValue, "<=") == 0) {
-      $$.intValue = $1.floatValue <= $3.floatValue;
-    } else if (strcmp($2.stringValue, "==") == 0) {
-      $$.intValue = $1.floatValue == $3.floatValue;
+      $$.boolValue = $1.floatValue <= $3.floatValue;
+    } else if (strcmp($2.stringValue, "=") == 0) {
+      $$.boolValue = $1.floatValue == $3.floatValue;
     } else if (strcmp($2.stringValue, "!=") == 0) {
-      $$.intValue = $1.floatValue != $3.floatValue;
+      $$.boolValue = $1.floatValue != $3.floatValue;
     }
   }else if($1.type == BFLOAT && $3.type == BINT){
     if (strcmp($2.stringValue, ">") == 0) {
-      $$.intValue = $1.floatValue > $3.intValue;
+      $$.boolValue = $1.floatValue > $3.intValue;
     } else if (strcmp($2.stringValue, "<") == 0) {
-      $$.intValue = $1.floatValue < $3.intValue;
+      $$.boolValue = $1.floatValue < $3.intValue;
     } else if (strcmp($2.stringValue, ">=") == 0) {
-      $$.intValue = $1.floatValue >= $3.intValue;
+      $$.boolValue = $1.floatValue >= $3.intValue;
     } else if (strcmp($2.stringValue, "<=") == 0) {
-      $$.intValue = $1.floatValue <= $3.intValue;
-    } else if (strcmp($2.stringValue, "==") == 0) {
-      $$.intValue = $1.floatValue == $3.intValue;
+      $$.boolValue = $1.floatValue <= $3.intValue;
+    } else if (strcmp($2.stringValue, "=") == 0) {
+      $$.boolValue = $1.floatValue == $3.intValue;
     } else if (strcmp($2.stringValue, "!=") == 0) {
-      $$.intValue = $1.floatValue != $3.intValue;
+      $$.boolValue = $1.floatValue != $3.intValue;
     }
   }else if($1.type == BINT && $3.type == BFLOAT){
     if (strcmp($2.stringValue, ">") == 0) {
-      $$.intValue = $1.intValue > $3.floatValue;
+      $$.boolValue = $1.intValue > $3.floatValue;
     } else if (strcmp($2.stringValue, "<") == 0) {
-      $$.intValue = $1.intValue < $3.floatValue;
+      $$.boolValue = $1.intValue < $3.floatValue;
     } else if (strcmp($2.stringValue, ">=") == 0) {
-      $$.intValue = $1.intValue >= $3.floatValue;
+      $$.boolValue = $1.intValue >= $3.floatValue;
     } else if (strcmp($2.stringValue, "<=") == 0) {
-      $$.intValue = $1.intValue <= $3.floatValue;
-    } else if (strcmp($2.stringValue, "==") == 0) {
-      $$.intValue = $1.intValue == $3.floatValue;
+      $$.boolValue = $1.intValue <= $3.floatValue;
+    } else if (strcmp($2.stringValue, "=") == 0) {
+      $$.boolValue = $1.intValue == $3.floatValue;
     } else if (strcmp($2.stringValue, "!=") == 0) {
-      $$.intValue = $1.intValue != $3.floatValue;
+      $$.boolValue = $1.intValue != $3.floatValue;
     }
   }else{
     yyerror("bad comparator");
@@ -356,14 +446,17 @@ expression: expression SUBSTRACT expression {
   }
 };
 
-expression: ID {
+expression: primitive;
+; //boolean_expression: primitive;
+
+primitive: ID {
   printf("BISON: Looking for ID %s\n",$1.stringValue);
   if (sym_lookup($1.stringValue, &$$) == SYMTAB_NOT_FOUND){
     yyerror("ID not defined");
   }
 };
 
-expression: UTYPE {
+primitive: UTYPE {
   $$ = $1;
 };
 
