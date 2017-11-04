@@ -4,15 +4,15 @@
 #include <stdlib.h>
 #include "prac1y.h"
 #include "./symtab/symtab.h"
-#include <math.h>
-#include <string.h>
+#include "./operations.h"
 
 #define YYLMAX 100
 
 extern FILE *yyout;
 extern int yylineno;
 extern char* yytext;
-extern void yyerror(char*);
+extern int yylex();
+extern void yyerror(const char*);
 
 %}
 
@@ -38,7 +38,8 @@ extern void yyerror(char*);
 %token MOD
 %token PARENTHESIS_OPEN
 %token PARENTHESIS_CLOSE
-%token <utype> FUNC
+%token <utype> FUNC_SQRT
+%token <utype> FUNC_LOG
 %token <utype> COMP
 
 %type <utype> statement
@@ -69,6 +70,10 @@ statement : ID ASSIGN expression NEWLINE{
       printf("BISON: ID: %s TYPE: STRING VALUE: %s\n",$1.stringValue, $3.stringValue);
       fprintf(yyout, "ID: %s TYPE: STRING VALUE: %s\n",$1.stringValue, $3.stringValue);
       break;
+    case BBOOL:
+      printf("BISON: ID: %s TYPE: BOOL VALUE: %s\n",$1.stringValue, $3.boolValue ? "true" : "false");
+      fprintf(yyout, "ID: %s TYPE: BOOL VALUE: %s\n",$1.stringValue, $3.boolValue ? "true" : "false");
+      break;
   }
 };
 
@@ -86,100 +91,31 @@ statement : expression NEWLINE {
       printf("BISON: EXPRESSION: TYPE: STRING VALUE: %s\n",$1.stringValue);
       fprintf(yyout, "EXPRESSION: TYPE: STRING VALUE: %s\n",$1.stringValue);
       break;
+    case BBOOL:
+      printf("BISON: EXPRESSION: TYPE: TYPE: BOOL VALUE: %s\n",$1.boolValue ? "true" : "false");
+      fprintf(yyout, "EXPRESSION: TYPE: TYPE: BOOL VALUE: %s\n",$1.boolValue ? "true" : "false");
+      break;
   };
 };
 
 statement : NEWLINE {};
 
-expression: FUNC PARENTHESIS_OPEN expression PARENTHESIS_CLOSE {
-  printf("BISON: Performing function\n");
-  if (strcmp($1.stringValue, "sqrt") == 0) {
-    $$.type = BFLOAT;
-    if($3.type == BFLOAT){
-      $$.floatValue = sqrt($3.floatValue);
-    }else if($3.type == BINT){
-      $$.floatValue = sqrt($3.intValue);
-    }else{
-      yyerror("bad sqrt function");
-    }
-  } else if (strcmp($1.stringValue, "log") == 0){
-    $$.type = BFLOAT;
-    if($3.type == BFLOAT){
-      $$.floatValue = log($3.floatValue);
-    }else if($3.type == BINT){
-      $$.floatValue = log($3.intValue);
-    }else{
-      yyerror("bad log function");
-    }
-  }else{
-    yyerror("bad function");
-  }
+expression: FUNC_SQRT PARENTHESIS_OPEN expression PARENTHESIS_CLOSE {
+  printf("BISON: Performing sqrt function\n");
+  if (sqrt_function(&$$, $3) == OP_FAILED)
+    yyerror("BISON: bad sqrt function\n");
+};
+
+expression: FUNC_LOG PARENTHESIS_OPEN expression PARENTHESIS_CLOSE {
+  printf("BISON: Performing log function\n");
+  if (log_function(&$$, $3) == OP_FAILED)
+    yyerror("BISON: bad log function\n");
 };
 
 expression: expression COMP expression {
-  printf("BISON: Performing comparation\n");
-  $$.type = BINT;
-  if($1.type == BSTRING && $3.type == BSTRING){
-    $$.intValue = strcmp($1.stringValue, $3.stringValue);
-  }else if($1.type == BINT && $3.type == BINT){
-    if (strcmp($2.stringValue, ">") == 0) {
-      $$.intValue = $1.intValue > $3.intValue;
-    } else if (strcmp($2.stringValue, "<") == 0) {
-      $$.intValue = $1.intValue < $3.intValue;
-    } else if (strcmp($2.stringValue, ">=") == 0) {
-      $$.intValue = $1.intValue >= $3.intValue;
-    } else if (strcmp($2.stringValue, "<=") == 0) {
-      $$.intValue = $1.intValue <= $3.intValue;
-    } else if (strcmp($2.stringValue, "==") == 0) {
-      $$.intValue = $1.intValue == $3.intValue;
-    } else if (strcmp($2.stringValue, "!=") == 0) {
-      $$.intValue = $1.intValue != $3.intValue;
-    }
-  }else if($1.type == BFLOAT && $3.type == BFLOAT){
-    if (strcmp($2.stringValue, ">") == 0) {
-      $$.intValue = $1.floatValue > $3.floatValue;
-    } else if (strcmp($2.stringValue, "<") == 0) {
-      $$.intValue = $1.floatValue < $3.floatValue;
-    } else if (strcmp($2.stringValue, ">=") == 0) {
-      $$.intValue = $1.floatValue >= $3.floatValue;
-    } else if (strcmp($2.stringValue, "<=") == 0) {
-      $$.intValue = $1.floatValue <= $3.floatValue;
-    } else if (strcmp($2.stringValue, "==") == 0) {
-      $$.intValue = $1.floatValue == $3.floatValue;
-    } else if (strcmp($2.stringValue, "!=") == 0) {
-      $$.intValue = $1.floatValue != $3.floatValue;
-    }
-  }else if($1.type == BFLOAT && $3.type == BINT){
-    if (strcmp($2.stringValue, ">") == 0) {
-      $$.intValue = $1.floatValue > $3.intValue;
-    } else if (strcmp($2.stringValue, "<") == 0) {
-      $$.intValue = $1.floatValue < $3.intValue;
-    } else if (strcmp($2.stringValue, ">=") == 0) {
-      $$.intValue = $1.floatValue >= $3.intValue;
-    } else if (strcmp($2.stringValue, "<=") == 0) {
-      $$.intValue = $1.floatValue <= $3.intValue;
-    } else if (strcmp($2.stringValue, "==") == 0) {
-      $$.intValue = $1.floatValue == $3.intValue;
-    } else if (strcmp($2.stringValue, "!=") == 0) {
-      $$.intValue = $1.floatValue != $3.intValue;
-    }
-  }else if($1.type == BINT && $3.type == BFLOAT){
-    if (strcmp($2.stringValue, ">") == 0) {
-      $$.intValue = $1.intValue > $3.floatValue;
-    } else if (strcmp($2.stringValue, "<") == 0) {
-      $$.intValue = $1.intValue < $3.floatValue;
-    } else if (strcmp($2.stringValue, ">=") == 0) {
-      $$.intValue = $1.intValue >= $3.floatValue;
-    } else if (strcmp($2.stringValue, "<=") == 0) {
-      $$.intValue = $1.intValue <= $3.floatValue;
-    } else if (strcmp($2.stringValue, "==") == 0) {
-      $$.intValue = $1.intValue == $3.floatValue;
-    } else if (strcmp($2.stringValue, "!=") == 0) {
-      $$.intValue = $1.intValue != $3.floatValue;
-    }
-  }else{
-    yyerror("bad comparator");
-  }
+  printf("BISON: Performing comparation operation\n");
+  if (compare_operation(&$$, $1, $2.stringValue, $3) == OP_FAILED)
+    yyerror("BISON: bad comparation\n");
 }
 
 expression: PARENTHESIS_OPEN expression PARENTHESIS_CLOSE{
@@ -188,151 +124,44 @@ expression: PARENTHESIS_OPEN expression PARENTHESIS_CLOSE{
 
 expression: expression POW expression {
   printf("BISON: Performing pow\n");
-  if($1.type == BINT && $3.type == BINT){
-    $$.intValue = pow($1.intValue, $3.intValue);
-    $$.type = BINT;
-  }else if($1.type == BFLOAT || $3.type == BFLOAT){
-    $$.type = BFLOAT;
-
-    if($1.type == BFLOAT && $3.type == BFLOAT){
-      $$.floatValue = pow($1.floatValue, $3.floatValue);
-    }else if($1.type == BFLOAT && $3.type == BINT){
-      $$.floatValue = pow($1.floatValue, $3.intValue);
-    }else if($1.type == BINT && $3.type == BFLOAT){
-      $$.floatValue = pow($1.intValue, $3.floatValue);
-    }
-  }else{
-    yyerror("bad **");
-  }
+  if (pow_operation(&$$, $1, $3) == OP_FAILED)
+    yyerror("BISON: bad **\n");
 };
 
 expression: expression MOD expression {
   printf("BISON: Performing mod\n");
-  if($1.type == BINT && $3.type == BINT){
-    $$.intValue = $1.intValue % $3.intValue;
-    $$.type = BINT;
-  }else if($1.type == BFLOAT || $3.type == BFLOAT){
-    $$.type = BFLOAT;
-
-    if($1.type == BFLOAT && $3.type == BFLOAT){
-      $$.floatValue = fmodf($1.floatValue, $3.floatValue);
-    }else if($1.type == BFLOAT && $3.type == BINT){
-      $$.floatValue = fmodf($1.floatValue, $3.intValue);
-    }else if($1.type == BINT && $3.type == BFLOAT){
-      $$.floatValue = fmodf($1.intValue, $3.floatValue);
-    }
-  }else{
-    yyerror("bad mod");
-  }
+  if (mod_operation(&$$, $1, $3) == OP_FAILED)
+    yyerror("BISON: bad mod\n");
 };
 
 expression: expression MULTIPLY expression {
   printf("BISON: Performing multiply\n");
-  if($1.type == BINT && $3.type == BINT){
-    $$.intValue = $1.intValue * $3.intValue;
-    $$.type = BINT;
-  }else if($1.type == BFLOAT || $3.type == BFLOAT){
-    $$.type = BFLOAT;
-
-    if($1.type == BFLOAT && $3.type == BFLOAT){
-      $$.floatValue = $1.floatValue * $3.floatValue;
-    }else if($1.type == BFLOAT && $3.type == BINT){
-      $$.floatValue = $1.floatValue * $3.intValue;
-    }else if($1.type == BINT && $3.type == BFLOAT){
-      $$.floatValue = $1.intValue * $3.floatValue;
-    }
-  }else{
-    yyerror("bad *");
-  }
+  if (multiply_operation(&$$, $1, $3) == OP_FAILED)
+    yyerror("BISON: bad *\n");
 };
 
 expression: expression DIVIDE expression {
   printf("BISON: Performing divide\n");
-  if(($3.type == BINT && $3.intValue == 0) || ($3.type == BFLOAT && $3.floatValue == 0.0)){
-    yyerror("bad /, divided by 0");
-  }
-
-  if($1.type == BINT && $3.type == BINT){
-    $$.intValue = $1.intValue / $3.intValue;
-    $$.type = BINT;
-  }else if($1.type == BFLOAT || $3.type == BFLOAT){
-    $$.type = BFLOAT;
-
-    if($1.type == BFLOAT && $3.type == BFLOAT){
-      $$.floatValue = $1.floatValue / $3.floatValue;
-    }else if($1.type == BFLOAT && $3.type == BINT){
-      $$.floatValue = $1.floatValue / $3.intValue;
-    }else if($1.type == BINT && $3.type == BFLOAT){
-      $$.floatValue = $1.intValue / $3.floatValue;
-    }
-  }else{
-    yyerror("bad /");
-  }
+  if (divide_operation(&$$, $1, $3) == OP_FAILED)
+    yyerror("BISON: bad /\n");
 };
 
 expression: expression ADD expression {
   printf("BISON: Performing add\n");
-  if($1.type == BSTRING || $3.type == BSTRING){
-    $$.type = BSTRING;
-
-    if($1.type == BSTRING && $3.type == BSTRING){
-      char * aux = (char *) malloc(1 + strlen($1.stringValue)+ strlen($3.stringValue));
-      strcpy(aux, $1.stringValue);
-      strcat(aux, $3.stringValue);
-      $$.stringValue = aux;
-    }else if($1.type == BSTRING && $3.type == BINT){
-      char * aux = (char *) malloc(1 + strlen($1.stringValue) + 11);
-      sprintf(aux, "%s%i", $1.stringValue, $3.intValue);
-      $$.stringValue = aux;
-    }else if($1.type == BINT && $3.type == BSTRING){
-      char * aux = (char *) malloc(1 + strlen($3.stringValue) + 11);
-      sprintf(aux, "%i%s", $1.intValue, $3.stringValue);
-      $$.stringValue = aux;
-    }else if($1.type == BSTRING && $3.type == BFLOAT){
-      char * aux = (char *) malloc(1 + strlen($1.stringValue) + 11);
-      sprintf(aux, "%s%f", $1.stringValue, $3.floatValue);
-      $$.stringValue = aux;
-    }else if($1.type == BFLOAT && $3.type == BSTRING){
-      char * aux = (char *) malloc(1 + strlen($3.stringValue) + 11);
-      sprintf(aux, "%f%s", $1.floatValue, $3.stringValue);
-      $$.stringValue = aux;
-    }
-  }else if($1.type == BINT && $3.type == BINT){
-    $$.intValue = $1.intValue + $3.intValue;
-    $$.type = BINT;
-  }else if($1.type == BFLOAT || $3.type == BFLOAT){
-    $$.type = BFLOAT;
-
-    if($1.type == BFLOAT && $3.type == BFLOAT){
-      $$.floatValue = $1.floatValue + $3.floatValue;
-    }else if($1.type == BFLOAT && $3.type == BINT){
-      $$.floatValue = $1.floatValue + $3.intValue;
-    }else if($1.type == BINT && $3.type == BFLOAT){
-      $$.floatValue = $1.intValue + $3.floatValue;
-    }
-  }else{
-    yyerror("bad +");
-  }
+  if (add_operation(&$$, $1, $3) == OP_FAILED)
+    yyerror("BISON: bad +\n");
 };
 
 expression: expression SUBSTRACT expression {
   printf("BISON: Performing substract\n");
-  if($1.type == BINT && $3.type == BINT){
-    $$.intValue = $1.intValue - $3.intValue;
-    $$.type = BINT;
-  }else if($1.type == BFLOAT || $3.type == BFLOAT){
-    $$.type = BFLOAT;
+  if (substract_operation(&$$, $1, $3) == OP_FAILED)
+    yyerror("BISON: bad -\n");
+};
 
-    if($1.type == BFLOAT && $3.type == BFLOAT){
-      $$.floatValue = $1.floatValue - $3.floatValue;
-    }else if($1.type == BFLOAT && $3.type == BINT){
-      $$.floatValue = $1.floatValue - $3.intValue;
-    }else if($1.type == BINT && $3.type == BFLOAT){
-      $$.floatValue = $1.intValue - $3.floatValue;
-    }
-  }else{
-    yyerror("bad -");
-  }
+expression: SUBSTRACT expression {
+  printf("BISON: Performing negate\n");
+  if (negate_operation(&$$, $2) == OP_FAILED)
+    yyerror("BISON: bad -\n");
 };
 
 expression: ID {
@@ -382,7 +211,7 @@ int end_analisi_sintactic(){
   return error;
 }
 
-void yyerror(char *explanation){
+void yyerror(const char *explanation){
   fprintf(stderr,"BISON ERROR: %s, in line %d \n",explanation,yylineno);
   exit(EXIT_FAILURE);
 }

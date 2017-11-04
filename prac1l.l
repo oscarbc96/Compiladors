@@ -9,7 +9,7 @@
 extern FILE *yyin;
 
 int return_token(int tok, char *s) {
-  if (tok == ID || tok == COMP || tok == FUNC) {
+  if (tok == ID || tok == COMP) {
     yylval.utype.stringValue = strdup(yytext); 
     yylval.utype.type = BSTRING; 
 
@@ -17,8 +17,6 @@ int return_token(int tok, char *s) {
       printf("FLEX: ID yytex: %s -> %s\n", yytext, yylval.utype.stringValue);
     }else if (tok == COMP){
       printf("FLEX: COMP yytex: %s -> %s\n", yytext, yylval.utype.stringValue);
-    }else if (tok == FUNC) {
-      printf("FLEX: FUNC yytex: %s -> %s\n", yytext, yylval.utype.stringValue);
     }
   }else if (tok == NEWLINE) {
     printf("FLEX: NEWLINE\n");
@@ -66,13 +64,10 @@ int error(char *msg){
 %x STRING
 
 id [a-zA-Z]+[a-zA-Z0-9]*
-int (-?[1-9]+[0-9]*|0)
-float (-[1-9]\.[0-9]+|-0\.[1-9]+[0-9]*|[0-9]+\.[0-9]+|0\.0)
+int [0-9]+
+float {int}\.{int}
 string (?:[^\"\\\n]|\\.)*
 oneline_comment \/\/.*
-multiline_comment_open \/\*(?:[^\*\/\n])*
-multiline_comment_body \\*[^*]*\\*+(?:[^/*][^*]*\\*+)*
-multiline_comment_close \/
 space [ \t\r]*
  
 %%
@@ -89,8 +84,8 @@ space [ \t\r]*
 "<="                                RETURN(COMP);
 "=="                                RETURN(COMP);
 "!="                                RETURN(COMP);
-"sqrt"                              RETURN(FUNC);
-"log"                               RETURN(FUNC);
+"sqrt"                              RETURN(FUNC_SQRT);
+"log"                               RETURN(FUNC_LOG);
 "("                                 RETURN(PARENTHESIS_OPEN);
 ")"                                 RETURN(PARENTHESIS_CLOSE);
 ":="                                RETURN(ASSIGN); 
