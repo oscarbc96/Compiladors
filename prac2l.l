@@ -9,7 +9,7 @@
 extern FILE *yyin;
 
 int return_token(int tok, char *s) {
-  if (tok == ID || tok == COMP || tok == FUNC) {
+  if (tok == ID || tok == COMP) {
     yylval.utype.stringValue = strdup(yytext); 
     yylval.utype.type = BSTRING; 
 
@@ -17,8 +17,6 @@ int return_token(int tok, char *s) {
       printf("FLEX: ID yytex: %s -> %s\n", yytext, yylval.utype.stringValue);
     }else if (tok == COMP){
       printf("FLEX: COMP yytex: %s -> %s\n", yytext, yylval.utype.stringValue);
-    }else if (tok == FUNC) {
-      printf("FLEX: FUNC yytex: %s -> %s\n", yytext, yylval.utype.stringValue);
     }
   }else if (tok == NEWLINE) {
     printf("FLEX: NEWLINE\n");
@@ -116,6 +114,7 @@ space [ \t\r]*
 "until"                             RETURN(UNTIL);
 "for"                               RETURN(FOR);
 "in"                                RETURN(IN);
+".."                                RETURN(RANGE);
 
 "+"                                 RETURN(ADD);
 "-"                                 RETURN(SUBSTRACT);
@@ -129,8 +128,8 @@ space [ \t\r]*
 "<="                                RETURN(COMP);
 "="                                 RETURN(COMP);
 "!="                                RETURN(COMP);
-"sqrt"                              RETURN(FUNC);
-"log"                               RETURN(FUNC);
+"sqrt"                              RETURN(FUNC_SQRT);
+"log"                               RETURN(FUNC_LOG);
 "("                                 RETURN(PARENTHESIS_OPEN);
 ")"                                 RETURN(PARENTHESIS_CLOSE);
 ":="                                RETURN(ASSIGN); 
