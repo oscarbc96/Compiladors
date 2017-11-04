@@ -74,17 +74,11 @@ Any operation with floats returns the result as a float.
 - `<=` Less than or equals to
 - `==` Equals
 - `!=` Different
-#### Int / float comparation 
-Returns 1 if true, otherwise 0.
-
-#### String comparation 
-`str1 == str2`
-If Return value < 0 then it indicates str1 is less than str2.
-
-If Return value > 0 then it indicates str2 is less than str1.
-
-If Return value = 0 then it indicates str1 is equal to str2.
 
 ### Functions
 - `sqrt()`
 - `log()`
+
+### Notes
+Id can't begin with numbers.
+A file must end with new line.
