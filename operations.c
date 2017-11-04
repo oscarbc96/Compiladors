@@ -235,39 +235,6 @@ op_status compare_operation(uniontype *result, uniontype op1, char *comp, uniont
   return OP_SUCCESS;
 }
 
-op_status not_operation(uniontype *result, uniontype op){
-  if(op.type == BBOOL){
-    result->type = BBOOL;
-    result->boolValue = !op.boolValue;
-  }else{
-    return OP_FAILED;
-  }
-
-  return OP_SUCCESS;
-}
-
-op_status and_operation(uniontype *result, uniontype op1, uniontype op2){
-  if(op1.type == BBOOL && op2.type == BBOOL){
-    result->type = BBOOL;
-    result->boolValue = op1.boolValue && op2.boolValue;
-  }else{
-    return OP_FAILED;
-  }
-
-  return OP_SUCCESS;
-}
-
-op_status or_operation(uniontype *result, uniontype op1, uniontype op2){
-  if(op1.type == BBOOL && op2.type == BBOOL){
-    result->type = BBOOL;
-    result->boolValue = op1.boolValue || op2.boolValue;
-  }else{
-    return OP_FAILED;
-  }
-
-  return OP_SUCCESS;
-}
-
 /* functions */
 op_status sqrt_function(uniontype *result, uniontype op){
   result->type = BFLOAT;
