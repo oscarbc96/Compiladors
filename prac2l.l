@@ -5,18 +5,38 @@
 #include <string.h>
 #include "prac2y.h"
 #include "prac2types.h"
+#include "./symtab/symtab.h"
 
 extern FILE *yyin;
 
 int return_token(int tok, char *s) {
-  if (tok == ID || tok == COMP) {
+  if (tok == ID) {
+    uniontype aux;
+    yylval.utype.stringValue = strdup(yytext); 
+
+    if (sym_lookup(yylval.utype.stringValue, &aux) != SYMTAB_NOT_FOUND){
+      yylval.utype.type = aux.type;
+      if(aux.type == BBOOL){
+        tok = ID_B;
+        printf("FLEX: ID_B yytex: %s -> %s\n", yytext, yylval.utype.stringValue);
+      } else {
+        tok = ID;
+        printf("FLEX: ID yytex: %s -> %s\n", yytext, yylval.utype.stringValue);
+      }
+    }
+  }else if (tok == COMP) {
     yylval.utype.stringValue = strdup(yytext); 
     yylval.utype.type = BSTRING; 
 
-    if (tok == ID){
-      printf("FLEX: ID yytex: %s -> %s\n", yytext, yylval.utype.stringValue);
-    }else if (tok == COMP){
-      printf("FLEX: COMP yytex: %s -> %s\n", yytext, yylval.utype.stringValue);
+    printf("FLEX: COMP yytex: %s -> %s\n", yytext, yylval.utype.stringValue);
+  }else if (tok == TTRUE || tok == TFALSE) {
+    yylval.utype.type = BBOOL; 
+    if (tok == TTRUE){
+      yylval.utype.boolValue = true;
+      printf("FLEX: %s yytex: true\n", s);
+    } else {
+      yylval.utype.boolValue = false;
+      printf("FLEX: %s yytex: false\n", s);
     }
   }else if (tok == NEWLINE) {
     printf("FLEX: NEWLINE\n");
@@ -82,8 +102,8 @@ int return_mode(pmode m){
 %x CALCMODE
 
 id [a-zA-Z]+[a-zA-Z0-9]*
-int (-?[1-9]+[0-9]*|0)
-float (-[1-9]\.[0-9]+|-0\.[1-9]+[0-9]*|[0-9]+\.[0-9]+|0\.0)
+int [0-9]+
+float {int}\.{int}
 string (?:[^\"\\\n]|\\.)*
 oneline_comment \/\/.*
 space [ \t\r]*
@@ -96,8 +116,8 @@ space [ \t\r]*
 <CALCMODE>"\n"                      BEGIN(INITIAL); RETURN(NEWLINE);
 <CALCMODE>.
 
-"true"                              RETURN_UTYPE(BBOOL);
-"false"                             RETURN_UTYPE(BBOOL);
+"true"                              RETURN(TTRUE);
+"false"                             RETURN(TFALSE);
 "not"                               RETURN(NOT);
 "and"                               RETURN(AND);
 "or"                                RETURN(OR);
@@ -115,6 +135,7 @@ space [ \t\r]*
 "for"                               RETURN(FOR);
 "in"                                RETURN(IN);
 ".."                                RETURN(RANGE);
+"continue"                          RETURN(CONTINUE);
 
 "+"                                 RETURN(ADD);
 "-"                                 RETURN(SUBSTRACT);
@@ -127,7 +148,7 @@ space [ \t\r]*
 ">="                                RETURN(COMP);
 "<="                                RETURN(COMP);
 "="                                 RETURN(COMP);
-"!="                                RETURN(COMP);
+"<>"                                RETURN(COMP);
 "sqrt"                              RETURN(FUNC_SQRT);
 "log"                               RETURN(FUNC_LOG);
 "("                                 RETURN(PARENTHESIS_OPEN);

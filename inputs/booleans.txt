@@ -1,0 +1,8 @@
+calc off
+
+a := false
+b := true
+
+a and b
+
+c := 5 > 8

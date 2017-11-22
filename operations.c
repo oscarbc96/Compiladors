@@ -1,5 +1,19 @@
 #include "./operations.h"
 
+op_status calculate_result_type(uniontype *result, uniontype op1, uniontype op2){
+  if(op1.type == BSTRING || op2.type == BSTRING){
+    result->type = BSTRING;
+  }else if(op1.type == BINT && op2.type == BINT){
+    result->type = BINT;
+  }else if(op1.type == BFLOAT || op2.type == BFLOAT){
+    result->type = BFLOAT;
+  }else{
+    return OP_FAILED;
+  }
+
+  return OP_SUCCESS;
+}
+
 /* math operations */
 op_status add_operation(uniontype *result, uniontype op1, uniontype op2){
   if(op1.type == BSTRING || op2.type == BSTRING){
@@ -11,19 +25,19 @@ op_status add_operation(uniontype *result, uniontype op1, uniontype op2){
       strcat(aux, op2.stringValue);
       result->stringValue = aux;
     }else if(op1.type == BSTRING && op2.type == BINT){
-      char * aux = (char *) malloc(1 + strlen(op1.stringValue) + 11);
+      char * aux = (char *) malloc(1 + strlen(op1.stringValue) + 12);
       sprintf(aux, "%s%i", op1.stringValue, op2.intValue);
       result->stringValue = aux;
     }else if(op1.type == BINT && op2.type == BSTRING){
-      char * aux = (char *) malloc(1 + strlen(op2.stringValue) + 11);
+      char * aux = (char *) malloc(1 + strlen(op2.stringValue) + 12);
       sprintf(aux, "%i%s", op1.intValue, op2.stringValue);
       result->stringValue = aux;
     }else if(op1.type == BSTRING && op2.type == BFLOAT){
-      char * aux = (char *) malloc(1 + strlen(op1.stringValue) + 11);
+      char * aux = (char *) malloc(1 + strlen(op1.stringValue) + 12);
       sprintf(aux, "%s%f", op1.stringValue, op2.floatValue);
       result->stringValue = aux;
     }else if(op1.type == BFLOAT && op2.type == BSTRING){
-      char * aux = (char *) malloc(1 + strlen(op2.stringValue) + 11);
+      char * aux = (char *) malloc(1 + strlen(op2.stringValue) + 12);
       sprintf(aux, "%f%s", op1.floatValue, op2.stringValue);
       result->stringValue = aux;
     }
@@ -155,6 +169,16 @@ op_status mod_operation(uniontype *result, uniontype op1, uniontype op2){
 
   return OP_SUCCESS;
 }
+
+op_status negate_operation(uniontype *result, uniontype op){
+  if(op.type == BINT){
+    result->intValue = -op.intValue;
+    result->type = BINT;
+  }else if(op.type == BFLOAT){
+    result->floatValue = -op.floatValue;
+    result->type = BFLOAT;
+  }
+};
 
 /* boolean operations */
 op_status compare_operation(uniontype *result, uniontype op1, char *comp, uniontype op2){
