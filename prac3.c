@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "prac2.h"
+#include "prac3.h"
 
 
 int main(int argc, char *argv[]){   

@@ -1,5 +1,5 @@
-#ifndef prac2typesH
-#define prac2typesH
+#ifndef prac3typesH
+#define prac3typesH
 
 #include <stdbool.h>
 

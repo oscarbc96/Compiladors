@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "prac2y.h"
+#include "prac3y.h"
 #include "./symtab/symtab.h"
 #include "./operations.h"
 
@@ -61,7 +61,7 @@ char * utype_to_string(uniontype value){
 %}
 
 %code requires {
-  #include "prac2types.h"
+  #include "prac3types.h"
 }
 
 %error-verbose

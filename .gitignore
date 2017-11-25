@@ -1,11 +1,11 @@
-prac2 
-prac2.o 
-prac2y.o 
-prac2l.o
-prac2l.c
-prac2y.c
-prac2y.h
-prac2y.output
+prac3 
+prac3.o 
+prac3y.o 
+prac3l.o
+prac3l.c
+prac3y.c
+prac3y.h
+prac3y.output
 ./outputs/*.txt
 
 # Created by https://www.gitignore.io/api/linux,macos,windows

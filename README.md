@@ -27,7 +27,7 @@ $ make clean
 ```
 **Run**
 ```sh
-$ ./prac2 INPUT_FILE OUTPUT_FILE
+$ ./prac3 INPUT_FILE OUTPUT_FILE
 ```
 **Run examples**
 ```sh

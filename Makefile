@@ -2,17 +2,17 @@ CC = gcc
 LEX = flex
 YACC = bison
 LIB = -lc -lfl 
-ELEX = prac2l.l
-EYACC = prac2y.y
-OBJ = prac2.o prac2y.o prac2l.o
-SRC = prac2.c symtab/symtab.c operations.c
-SRCL = prac2l.c
-SRCY = prac2y.c
-BIN = prac2
+ELEX = prac3l.l
+EYACC = prac3y.y
+OBJ = prac3.o prac3y.o prac3l.o
+SRC = prac3.c symtab/symtab.c operations.c
+SRCL = prac3l.c
+SRCY = prac3y.c
+BIN = prac3
 LFLAGS = -n -o $*.c 
 YFLAGS = -d -v -o $*.c
 CFLAGS = -ansi -Wall -g
-OTHERS = prac2y.h prac2y.output
+OTHERS = prac3y.h prac3y.output
 
 all : $(SRCL) $(SRCY)
 	$(CC) -o $(BIN) $(SRCL) $(SRCY) $(SRC) $(LIB)

@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "prac2y.h"
-#include "prac2types.h"
+#include "prac3y.h"
+#include "prac3types.h"
 #include "./symtab/symtab.h"
 
 extern FILE *yyin;
