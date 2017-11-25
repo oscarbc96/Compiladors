@@ -48,6 +48,7 @@ int return_token(int tok, char *s) {
 
 int return_utype(type t) {
   yylval.utype.type = t; 
+  yylval.utype.array = false;
                                        
   switch(t){
     case BINT:
@@ -136,6 +137,14 @@ space [ \t\r]*
 "in"                                RETURN(IN);
 ".."                                RETURN(RANGE);
 "continue"                          RETURN(CONTINUE);
+"switch"                            RETURN(SWITCH);
+"case"                              RETURN(CASE);
+"default"                           RETURN(DEFAULT);
+"break"                             RETURN(BREAK);
+
+"["                                 RETURN(SQUARE_BRACKET_OPEN);
+"]"                                 RETURN(SQUARE_BRACKET_CLOSE);
+","                                 RETURN(COMMA);
 
 "+"                                 RETURN(ADD);
 "-"                                 RETURN(SUBSTRACT);

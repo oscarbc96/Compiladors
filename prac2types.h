@@ -7,6 +7,7 @@ typedef enum {CALC, PRGM} pmode;
 
 typedef enum {BINT, BFLOAT, BSTRING, BBOOL} type;
 
+
 typedef struct{
   union {
     int intValue;
@@ -15,6 +16,9 @@ typedef struct{
     bool boolValue;
   };
   type type;
+  void* next;
+  bool array;
+  bool empty;
 } uniontype;
 
 #endif

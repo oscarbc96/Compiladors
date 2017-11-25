@@ -1,2 +1,0 @@
-implementar cortcircuit
-implementar condicions per a calc mode

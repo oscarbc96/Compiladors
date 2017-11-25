@@ -1,0 +1,11 @@
+calc off
+
+a := 5
+
+if (a > 5) then
+  x:= 2
+elsif (a < 5) then
+  x:= 3
+elsif (a = 5) then
+  x:= 5
+fi

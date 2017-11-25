@@ -1,6 +1,10 @@
 # Compiladors - Practica 2
 
-Primera practica de compiladors. Desenvolupada sota l'entorn proporcionat per docker. 
+Practica de compiladors. Desenvolupada sota l'entorn proporcionat per docker. 
+Com a funcionalitat extres s'ha afegit:
+- switch instruction
+- array list
+- continue instruction
 
 **Requeriments**
  -  gcc 
@@ -25,17 +29,20 @@ $ make clean
 ```sh
 $ ./prac2 INPUT_FILE OUTPUT_FILE
 ```
-## Exemples
+**Run examples**
+```sh
+$ make test
+```
+## Examples
 
-|  Nom  | Descripció |  Comanda  |
-| - | - | - |
-|  `default`  | Exemple de l'enunciat | `$ ./prac2 ./inputs/default.txt ./outputs/default.txt` |
-|  `arithmetic`  | Exemple d'operacions aritmetiques | `$ ./prac2 ./inputs/arithmetic.txt ./outputs/arithmetic.txt` |
-|  `commentaries`  | Exemple de comentaris | `$ ./prac2 ./inputs/commentaries.txt ./outputs/commentaries.txt` |
-|  `comparators`  | Exemple de comparacions | `$ ./prac2 ./inputs/comparators.txt ./outputs/comparators.txt` |
-|  `functions`  | Exemple de funcions | `$ ./prac2 ./inputs/functions.txt ./outputs/functions.txt` |
+All examples are defined in `inputs` folder.
 
 ## Documentació
+### Calc mode
+File must begin with calc mode:
+- `calc on`: begins in calculator mode.
+- `calc off`: begins in program mode.
+
 ### Types
 **int**
 `a := 2`
@@ -45,6 +52,14 @@ $ ./prac2 INPUT_FILE OUTPUT_FILE
 
 **string**
 `a := "test"`
+
+**array**
+This is a basic implementation of an array list.
+```
+a := [1, 2.0, 3, 4.0]
+a[0]
+a[1]
+```
 
 ### Operations
 - `+` Add
@@ -72,8 +87,8 @@ Any operation with floats returns the result as a float.
 - `<` Less than
 - `>=` Greather than or equals to
 - `<=` Less than or equals to
-- `==` Equals
-- `!=` Different
+- `=` Equals
+- `<>` Different
 #### Int / float comparation 
 Returns 1 if true, otherwise 0.
 

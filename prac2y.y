@@ -34,6 +34,8 @@ char * get_type(uniontype value){
 
 char * utype_to_string(uniontype value){
   char *str = malloc(12);
+  char *aux = malloc(100);
+  uniontype *auxt = &value;
 
   switch(value.type){
     case BINT:
@@ -90,6 +92,10 @@ char * utype_to_string(uniontype value){
 %token FOR
 %token IN
 %token RANGE
+%token SWITCH
+%token CASE
+%token DEFAULT
+%token BREAK
 %token NEWLINE
 %token ASSIGN
 %token ADD
@@ -100,6 +106,9 @@ char * utype_to_string(uniontype value){
 %token MOD
 %token PARENTHESIS_OPEN
 %token PARENTHESIS_CLOSE
+%token COMMA
+%token <utype> SQUARE_BRACKET_OPEN
+%token <utype> SQUARE_BRACKET_CLOSE
 %token <utype> CONTINUE
 %token <utype> FUNC_SQRT
 %token <utype> FUNC_LOG
@@ -118,6 +127,11 @@ char * utype_to_string(uniontype value){
 %type <utype> for_id
 %type <utype> iterative_body
 %type <utype> iterative_statement
+%type <utype> array
+%type <utype> array_statement
+%type <utype> array_content
+%type <utype> array_value
+%type <utype> array_position
 
 %left ADD SUBSTRACT
 %left MULTIPLY DIVIDE MOD
@@ -159,24 +173,77 @@ statement : id ASSIGN general_expression NEWLINE{
   char * typestr = get_type($3);
 
   if (current_mode == CALC){
-    char * utypestr = utype_to_string($3);
-    printf("BISON: ASSIGN ID: %s TYPE: %s VALUE: %s\n", $1.stringValue, typestr, utypestr);
-    fprintf(yyout, "ASSIGN ID: %s TYPE: %s VALUE: %s\n", $1.stringValue, typestr, utypestr);
+    if(!$3.array){
+      char * utypestr = utype_to_string($3);
+      printf("BISON: ASSIGN ID: %s TYPE: %s VALUE: %s\n", $1.stringValue, typestr, utypestr);
+      fprintf(yyout, "ASSIGN ID: %s TYPE: %s VALUE: %s\n", $1.stringValue, typestr, utypestr);
+    } else {
+      if (!$1.empty) {
+        uniontype * auxt = &$3;
+
+        printf("BISON: ASSIGN ID: %s TYPE: ARRAY VALUE: ", $1.stringValue);
+        fprintf(yyout, "ASSIGN ID: %s TYPE: ARRAY VALUE: ", $1.stringValue);
+        
+        while(auxt->next != NULL){
+          printf("%s, ", utype_to_string(*auxt));
+          fprintf(yyout,"%s, ", utype_to_string(*auxt));
+          auxt = auxt->next;
+        }
+
+        printf("%s\n", utype_to_string(*auxt));
+        fprintf(yyout,"%s\n", utype_to_string(*auxt));
+      } else {
+        printf("BISON: EXPRESSION: TYPE: ARRAY VALUE: EMPTY\n");
+        fprintf(yyout, "EXPRESSION: TYPE: ARRAY VALUE: EMPTY\n");
+      }
+    }
   } else {
-    printf("BISON: ASSIGN ID: %s TYPE: %s\n", $1.stringValue, typestr);
-    fprintf(yyout, "ASSIGN ID: %s TYPE: %s\n", $1.stringValue, typestr);
+    if(!$1.array){
+      printf("BISON: ASSIGN ID: %s TYPE: %s\n", $1.stringValue, typestr);
+      fprintf(yyout, "ASSIGN ID: %s TYPE: %s\n", $1.stringValue, typestr);
+    } else {
+      printf("BISON: ASSIGN ID: %s TYPE: ARRAY\n", $1.stringValue);
+      fprintf(yyout, "ASSIGN ID: %s TYPE: ARRAY\n", $1.stringValue);
+    }
   }
 };
 
 statement : general_expression NEWLINE {
   char * typestr = get_type($1);
+  
   if (current_mode == CALC){
-    char * utypestr = utype_to_string($1);
-    printf("BISON: EXPRESSION: TYPE: %s VALUE: %s\n", typestr, utypestr);
-    fprintf(yyout, "EXPRESSION: TYPE: %s VALUE: %s\n", typestr, utypestr);
+    if(!$1.array){
+      char * utypestr = utype_to_string($1);
+      printf("BISON: EXPRESSION: TYPE: %s VALUE: %s\n", typestr, utypestr);
+      fprintf(yyout, "EXPRESSION: TYPE: %s VALUE: %s\n", typestr, utypestr);
+    } else {
+      if (!$1.empty) {
+        uniontype * auxt = &$1;
+
+        printf("BISON: EXPRESSION: TYPE: ARRAY VALUE: ");
+        fprintf(yyout, "EXPRESSION: TYPE: ARRAY VALUE: ");
+        
+        while(auxt->next != NULL){
+          printf("%s, ", utype_to_string(*auxt));
+          fprintf(yyout,"%s, ", utype_to_string(*auxt));
+          auxt = auxt->next;
+        }
+
+        printf("%s\n", utype_to_string(*auxt));
+        fprintf(yyout,"%s\n", utype_to_string(*auxt));
+      } else {
+        printf("BISON: EXPRESSION: TYPE: ARRAY VALUE: EMPTY\n");
+        fprintf(yyout, "EXPRESSION: TYPE: ARRAY VALUE: EMPTY\n");
+      }
+    }
   } else {
-    printf("BISON: EXPRESSION TYPE: %s\n", typestr);
-    fprintf(yyout, "EXPRESSION TYPE: %s\n", typestr);
+    if(!$1.array){
+      printf("BISON: EXPRESSION TYPE: %s\n", typestr);
+      fprintf(yyout, "EXPRESSION TYPE: %s\n", typestr);
+    } else {
+      printf("BISON: EXPRESSION TYPE: ARRAY\n");
+      fprintf(yyout, "EXPRESSION TYPE: ARRAY\n");
+    }
   }
 };
 
@@ -189,11 +256,61 @@ check_mode : {
     yyerror("Program statements not allowed in PRGM mode.\n");
 };
 
-general_expression : expression | boolean_expression;
+general_expression : expression | boolean_expression | array;
+
+general_expression : ID SQUARE_BRACKET_OPEN array_position SQUARE_BRACKET_CLOSE {
+  if ($3.type != BINT)
+    yyerror("Position must be an int");
+
+  if ($3.intValue < 0)
+    yyerror("Position must be positive");
+
+  uniontype* paux = (uniontype*)malloc(sizeof(uniontype));
+
+  sym_lookup($1.stringValue, paux);
+  
+  if (!paux->array)
+    yyerror("Value must be an array");
+
+  if (paux->empty)
+    yyerror("Index error");
+
+  int pos = $3.intValue;
+  while(pos > 0){
+    paux = paux->next;
+    if (paux == NULL)
+      yyerror("Index error");
+    pos--;
+  }
+
+  $$ = *paux;
+  $$.array = false;
+  $$.next = NULL;
+};
+
+array_position : ID | UTYPE;
 
 id: ID | ID_B;
 
-program_statement : if_statement | while_statement | repeat_statement | for_statement;
+array_value : id { 
+    printf("BISON: Looking for ID %s\n", $1.stringValue);
+    if (sym_lookup($1.stringValue, &$$) == SYMTAB_NOT_FOUND)
+      yyerror("ID not defined");
+  } | UTYPE { $$ = $1; } | TTRUE { $$ = $1; } | TFALSE { $$ = $1; };
+
+array_content : array_value COMMA  { $$ = $1; } | array_value SQUARE_BRACKET_CLOSE { $$ = $1; };
+
+array_statement : array_content array_statement { $$ = $1; $$.next = &$2; $$.array = true; $$.empty = false; } | array_content { $$ = $1; $$.next = NULL; $$.array = true; $$.empty = false;};
+
+array : SQUARE_BRACKET_OPEN SQUARE_BRACKET_CLOSE{ $$.array = true; $$.empty = true; };
+
+array : SQUARE_BRACKET_OPEN array_statement {
+  $$ = $2;
+  $$.array = true;
+  $$.empty = false;
+};
+
+program_statement : if_statement | while_statement | repeat_statement | for_statement | switch_statement;
 
 if_statement : IF if_init PARENTHESIS_OPEN condition PARENTHESIS_CLOSE THEN root elsif_else_fi;
 
@@ -221,6 +338,30 @@ elsif_else_fi: if_end;
 if_end : FI {
   printf("BISON: END_IF\n");
   fprintf(yyout, "END_IF\n");
+};
+
+switch_statement : SWITCH switch_init PARENTHESIS_OPEN id PARENTHESIS_CLOSE DO NEWLINE switch_case DONE{
+  printf("BISON: END_SWITCH\n");
+  fprintf(yyout, "END_SWITCH\n");
+};
+
+switch_init : {
+  printf("BISON: SWITCH_INIT\n");
+  fprintf(yyout, "SWITCH_INIT\n");
+};
+
+switch_case : CASE switch_case_init condition THEN root BREAK NEWLINE switch_case;
+
+switch_case : DEFAULT switch_case_default_init THEN root BREAK NEWLINE;
+
+switch_case_init : {
+  printf("BISON: CASE\n");
+  fprintf(yyout, "CASE\n");
+};
+
+switch_case_default_init : {
+  printf("BISON: DEFAULT\n");
+  fprintf(yyout, "DEFAULT\n");
 };
 
 while_statement: WHILE while_init PARENTHESIS_OPEN condition PARENTHESIS_CLOSE DO iterative_body DONE{

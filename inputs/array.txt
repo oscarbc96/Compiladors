@@ -1,0 +1,13 @@
+calc on
+
+[]
+[1]
+
+a := 9
+b := true and false
+c := [a, 4, 6.0, true, "afds", b]
+d := []
+
+c[0]
+c[1]
+c[2]

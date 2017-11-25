@@ -1,0 +1,7 @@
+calc off
+
+a := 5
+
+repeat 
+  5 + 5
+until (a < 7)

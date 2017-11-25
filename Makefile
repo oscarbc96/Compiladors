@@ -24,5 +24,11 @@ $(SRCY) : $(EYACC)
 	$(YACC) $(YFLAGS) $<
 
 clean : 
-	rm -f *~ $(BIN) $(OBJ) $(SRCL) $(SRCY) $(OTHERS) ./outputs/*.txt
+	rm -f *~ $(BIN) $(OBJ) $(SRCL) $(SRCY) $(OTHERS) ./outputs/*
 
+test : clean all
+	for filename in ./inputs/*.txt; do \
+		file=$$(basename $$filename); \
+		echo "Running "$$filename; \
+    ./$(BIN) ./inputs/$$file ./outputs/$$file &> ./outputs/$$file.debug; \
+  done
