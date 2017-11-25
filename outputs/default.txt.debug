@@ -1,0 +1,141 @@
+FLEX: Detected mode PRGM
+BISON: Starting in mode PRGM
+FLEX: NEWLINE
+FLEX: NEWLINE
+FLEX: COMMENT -> FLEX: NEWLINE
+FLEX: ASSIGN yytex: :=
+FLEX: FLOAT yytex: 0.0 -> 0.000000
+FLEX: NEWLINE
+BISON: ASSIGN ID: total TYPE: FLOAT
+FLEX: ASSIGN yytex: :=
+FLEX: INT yytex: 1 -> 1
+FLEX: NEWLINE
+BISON: ASSIGN ID: i TYPE: INT
+FLEX: WHILE yytex: while
+BISON: Checking mode
+BISON: WHILE
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: ID yytex: total -> total
+BISON: Looking for ID total
+FLEX: COMP yytex: < -> <
+FLEX: FLOAT yytex: 1000.0 -> 1000.000000
+FLEX: PARENTHESIS_CLOSE yytex: )
+BISON: Performing comparation operation
+FLEX: DO yytex: do
+FLEX: NEWLINE
+FLEX: IF yytex: if
+BISON: Checking mode
+BISON: IF
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: ID yytex: i -> i
+BISON: Looking for ID i
+FLEX: COMP yytex: = -> =
+FLEX: INT yytex: 1 -> 1
+FLEX: PARENTHESIS_CLOSE yytex: )
+BISON: Performing comparation operation
+FLEX: THEN yytex: then
+FLEX: NEWLINE
+FLEX: ID yytex: total -> total
+FLEX: ASSIGN yytex: :=
+FLEX: ID yytex: total -> total
+FLEX: MULTIPLY yytex: *
+BISON: Looking for ID total
+FLEX: INT yytex: 2 -> 2
+FLEX: NEWLINE
+BISON: Performing multiply
+BISON: ASSIGN ID: total TYPE: FLOAT
+FLEX: ELSE yytex: else
+BISON: ELSE
+FLEX: NEWLINE
+FLEX: ID yytex: total -> total
+FLEX: ASSIGN yytex: :=
+FLEX: ID yytex: total -> total
+FLEX: SUBSTRACT yytex: -
+BISON: Looking for ID total
+FLEX: INT yytex: 1 -> 1
+FLEX: NEWLINE
+BISON: Performing substract
+BISON: ASSIGN ID: total TYPE: FLOAT
+FLEX: FI yytex: fi
+BISON: END_IF
+FLEX: NEWLINE
+FLEX: ID yytex: i -> i
+FLEX: ASSIGN yytex: :=
+FLEX: SUBSTRACT yytex: -
+FLEX: ID yytex: i -> i
+BISON: Looking for ID i
+BISON: Performing negate
+FLEX: NEWLINE
+BISON: ASSIGN ID: i TYPE: INT
+FLEX: DONE yytex: done
+BISON: END_WHILE
+FLEX: NEWLINE
+FLEX: NEWLINE
+FLEX: ID yytex: total -> total
+FLEX: NEWLINE
+BISON: Looking for ID total
+BISON: EXPRESSION TYPE: FLOAT
+FLEX: NEWLINE
+FLEX: COMMENT -> FLEX: NEWLINE
+FLEX: ASSIGN yytex: :=
+FLEX: INT yytex: 50 -> 50
+FLEX: NEWLINE
+BISON: ASSIGN ID: n TYPE: INT
+FLEX: ASSIGN yytex: :=
+FLEX: INT yytex: 1 -> 1
+FLEX: NEWLINE
+BISON: ASSIGN ID: x TYPE: INT
+FLEX: ID yytex: x -> x
+FLEX: NEWLINE
+BISON: Looking for ID x
+BISON: EXPRESSION TYPE: INT
+FLEX: ASSIGN yytex: :=
+FLEX: INT yytex: 1 -> 1
+FLEX: NEWLINE
+BISON: ASSIGN ID: y TYPE: INT
+FLEX: ID yytex: y -> y
+FLEX: NEWLINE
+BISON: Looking for ID y
+BISON: EXPRESSION TYPE: INT
+FLEX: FOR yytex: for
+BISON: Checking mode
+BISON: FOR
+FLEX: PARENTHESIS_OPEN yytex: (
+BISON: Looking for ID index
+FLEX: IN yytex: in
+FLEX: INT yytex: 3 -> 3
+FLEX: RANGE yytex: ..
+FLEX: ID yytex: n -> n
+BISON: Looking for ID n
+FLEX: PARENTHESIS_CLOSE yytex: )
+FLEX: DO yytex: do
+FLEX: NEWLINE
+FLEX: ASSIGN yytex: :=
+FLEX: ID yytex: x -> x
+FLEX: ADD yytex: +
+BISON: Looking for ID x
+FLEX: ID yytex: y -> y
+BISON: Looking for ID y
+FLEX: NEWLINE
+BISON: Performing add
+BISON: ASSIGN ID: fib TYPE: INT
+FLEX: ID yytex: x -> x
+FLEX: ASSIGN yytex: :=
+FLEX: ID yytex: y -> y
+FLEX: NEWLINE
+BISON: Looking for ID y
+BISON: ASSIGN ID: x TYPE: INT
+FLEX: ID yytex: y -> y
+FLEX: ASSIGN yytex: :=
+FLEX: ID yytex: fib -> fib
+FLEX: NEWLINE
+BISON: Looking for ID fib
+BISON: ASSIGN ID: y TYPE: INT
+FLEX: ID yytex: fib -> fib
+FLEX: NEWLINE
+BISON: Looking for ID fib
+BISON: EXPRESSION TYPE: INT
+FLEX: DONE yytex: done
+BISON: END_FOR
+FLEX: NEWLINE
+The compilation has been successful

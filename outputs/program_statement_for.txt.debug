@@ -1,0 +1,32 @@
+FLEX: Detected mode PRGM
+BISON: Starting in mode PRGM
+FLEX: NEWLINE
+FLEX: NEWLINE
+FLEX: ASSIGN yytex: :=
+FLEX: INT yytex: 2 -> 2
+FLEX: NEWLINE
+BISON: ASSIGN ID: b TYPE: INT
+FLEX: NEWLINE
+FLEX: FOR yytex: for
+BISON: Checking mode
+BISON: FOR
+FLEX: PARENTHESIS_OPEN yytex: (
+BISON: Looking for ID a
+FLEX: IN yytex: in
+FLEX: ID yytex: b -> b
+BISON: Looking for ID b
+FLEX: RANGE yytex: ..
+FLEX: INT yytex: 4 -> 4
+FLEX: PARENTHESIS_CLOSE yytex: )
+FLEX: DO yytex: do
+FLEX: NEWLINE
+FLEX: INT yytex: 5 -> 5
+FLEX: ADD yytex: +
+FLEX: INT yytex: 5 -> 5
+FLEX: NEWLINE
+BISON: Performing add
+BISON: EXPRESSION TYPE: INT
+FLEX: DONE yytex: done
+BISON: END_FOR
+FLEX: NEWLINE
+The compilation has been successful
