@@ -7,6 +7,10 @@ typedef enum {CALC, PRGM} pmode;
 
 typedef enum {BINT, BFLOAT, BSTRING, BBOOL} type;
 
+typedef struct {
+  int line_number;
+  struct line *next;
+} line;
 
 typedef struct{
   union {
@@ -19,6 +23,10 @@ typedef struct{
   void* next;
   bool array;
   bool empty;
+  char *name;
+  line *trueList;
+  line *falseList;
+  line *nextList;
 } uniontype;
 
 #endif

@@ -4,7 +4,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef enum {OP_SUCCESS, OP_FAILED} op_status;
+#ifndef prac3op_statusH
+  #define prac3op_statusH
+  typedef enum {OP_SUCCESS, OP_FAILED} op_status;
+#endif
 
 op_status calculate_result_type(uniontype *result, uniontype op1, uniontype op2);
 

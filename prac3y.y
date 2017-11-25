@@ -5,6 +5,7 @@
 #include "prac3y.h"
 #include "./symtab/symtab.h"
 #include "./operations.h"
+#include "./C3A.h"
 
 #define YYLMAX 100
 
@@ -14,6 +15,11 @@ extern char* yytext;
 extern int yylex();
 extern void yyerror(const char*);
 pmode current_mode;
+
+int var_counter = 1;
+int line_counter = 0;
+int instructions_capacity = N_INSTRUCCIONS_ADD;
+char ** instructions;
 
 char * get_type(uniontype value){
   switch(value.type){
@@ -199,8 +205,14 @@ statement : id ASSIGN general_expression NEWLINE{
     }
   } else {
     if(!$1.array){
-      printf("BISON: ASSIGN ID: %s TYPE: %s\n", $1.stringValue, typestr);
-      fprintf(yyout, "ASSIGN ID: %s TYPE: %s\n", $1.stringValue, typestr);
+      //printf("BISON: ASSIGN ID: %s TYPE: %s\n", $1.stringValue, typestr);
+      //fprintf(yyout, "ASSIGN ID: %s TYPE: %s\n", $1.stringValue, typestr);
+      char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
+      create_variable(&$$.name);
+      sprintf(instruction, "%s := %s", $$.name, $3.name);
+      emit(instruction);
+      sprintf(instruction, "%s := %s", $1.stringValue, $$.name);
+      emit(instruction);
     } else {
       printf("BISON: ASSIGN ID: %s TYPE: ARRAY\n", $1.stringValue);
       fprintf(yyout, "ASSIGN ID: %s TYPE: ARRAY\n", $1.stringValue);
@@ -238,8 +250,16 @@ statement : general_expression NEWLINE {
     }
   } else {
     if(!$1.array){
-      printf("BISON: EXPRESSION TYPE: %s\n", typestr);
-      fprintf(yyout, "EXPRESSION TYPE: %s\n", typestr);
+      char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
+      switch ($1.type){
+        case BINT:
+          sprintf(instruction, "PUTI %s", $1.name);
+          break;
+        case BFLOAT:
+          sprintf(instruction, "PUTF %s", $1.name);
+          break;
+      }
+      emit(instruction);
     } else {
       printf("BISON: EXPRESSION TYPE: ARRAY\n");
       fprintf(yyout, "EXPRESSION TYPE: ARRAY\n");
@@ -451,101 +471,105 @@ expression: PARENTHESIS_OPEN expression PARENTHESIS_CLOSE{
 
 expression: expression POW expression {
   printf("BISON: Performing pow\n");
-  if (current_mode == CALC){
-    if (pow_operation(&$$, $1, $3) == OP_FAILED){
-      yyerror("BISON: bad **\n");
-    }
-  } else {
-    if (calculate_result_type(&$$, $1, $3) == OP_FAILED){
-      yyerror("BISON: bad **\n");
-    }
-  }
+  op_status status = OP_FAILED;
+
+  if (current_mode == CALC)
+    status = pow_operation(&$$, $1, $3);
+  else if (current_mode == PRGM)
+    status = pow_operation_c3a(&$$, &$1, &$3);
+  
+  if (status == OP_FAILED)
+    yyerror("BISON: bad **\n");
 };
 
 expression: expression MOD expression {
   printf("BISON: Performing mod\n");
-  if (current_mode == CALC){
-    if (pow_operation(&$$, $1, $3) == OP_FAILED){
-      yyerror("BISON: bad mod\n");
-    }
-  } else {
-    if (calculate_result_type(&$$, $1, $3) == OP_FAILED){
-      yyerror("BISON: bad mod\n");
-    }
-  }
+  op_status status = OP_FAILED;
+
+  if (current_mode == CALC)
+    status = mod_operation(&$$, $1, $3);
+  else if (current_mode == PRGM)
+    status = mod_operation_c3a(&$$, &$1, &$3);
+  
+  if (status == OP_FAILED)
+    yyerror("BISON: bad mod\n");
 };
 
 expression: expression MULTIPLY expression {
   printf("BISON: Performing multiply\n");
-  if (current_mode == CALC){
-    if (multiply_operation(&$$, $1, $3) == OP_FAILED){
-      yyerror("BISON: bad *\n");
-    }
-  } else {
-    if (calculate_result_type(&$$, $1, $3) == OP_FAILED){
-      yyerror("BISON: bad *\n");
-    }
-  }
+  op_status status = OP_FAILED;
+
+  if (current_mode == CALC)
+    status = multiply_operation(&$$, $1, $3);
+  else if (current_mode == PRGM)
+    status = multiply_operation_c3a(&$$, &$1, &$3);
+  
+  if (status == OP_FAILED)
+    yyerror("BISON: bad *\n");
 };
 
 expression: expression DIVIDE expression {
   printf("BISON: Performing divide\n");
-  if (current_mode == CALC){
-    if (divide_operation(&$$, $1, $3) == OP_FAILED){
-      yyerror("BISON: bad /\n");
-    }
-  } else {
-    if (calculate_result_type(&$$, $1, $3) == OP_FAILED){
-      yyerror("BISON: bad /\n");
-    }
-  }
+  op_status status = OP_FAILED;
+
+  if (current_mode == CALC)
+    status = divide_operation(&$$, $1, $3);
+  else if (current_mode == PRGM)
+    status = divide_operation_c3a(&$$, &$1, &$3);
+  
+  if (status == OP_FAILED)
+    yyerror("BISON: bad /\n");
 };
 
 expression: expression ADD expression {
   printf("BISON: Performing add\n");
-  if (current_mode == CALC){
-    if (add_operation(&$$, $1, $3) == OP_FAILED){
-      yyerror("BISON: bad +\n");
-    }
-  } else {
-    if (calculate_result_type(&$$, $1, $3) == OP_FAILED){
-      yyerror("BISON: bad +\n");
-    }
-  }
+  op_status status = OP_FAILED;
+
+  if (current_mode == CALC)
+    status = add_operation(&$$, $1, $3);
+  else if (current_mode == PRGM)
+    status = add_operation_c3a(&$$, &$1, &$3);
+  
+  if (status == OP_FAILED)
+    yyerror("BISON: bad +\n");
 };
 
 expression: expression SUBSTRACT expression {
   printf("BISON: Performing substract\n");
-  if (current_mode == CALC){
-    if (substract_operation(&$$, $1, $3) == OP_FAILED){
-      yyerror("BISON: bad -\n");
-    }
-  }  else {
-    if (calculate_result_type(&$$, $1, $3) == OP_FAILED){
-      yyerror("BISON: bad -\n");
-    }
-  }
+  op_status status = OP_FAILED;
+
+  if (current_mode == CALC)
+    status = substract_operation(&$$, $1, $3);
+  else if (current_mode == PRGM)
+    status = substract_operation_c3a(&$$, &$1, &$3);
+  
+  if (status == OP_FAILED)
+    yyerror("BISON: bad -\n");
 };
 
 expression: SUBSTRACT expression %prec MAX_PRIORITY{
   printf("BISON: Performing negate\n");
-  if (current_mode == CALC){
-    if (negate_operation(&$$, $2) == OP_FAILED){
-      yyerror("BISON: bad -\n");
-    }
-  } else {
-    $$.type = $2.type;
-  }
+  op_status status = OP_FAILED;
+
+  if (current_mode == CALC)
+    status = negate_operation(&$$, $2);
+  else if (current_mode == PRGM)
+    status = negate_operation_c3a(&$$, &$2);
+  
+  if (status == OP_FAILED)
+    yyerror("BISON: bad -\n");
 };
 
 expression: ID {
   printf("BISON: Looking for ID %s\n",$1.stringValue);
   if (sym_lookup($1.stringValue, &$$) == SYMTAB_NOT_FOUND)
     yyerror("ID not defined");
+  $$.name = $1.stringValue;
 };
 
 expression: UTYPE {
   $$ = $1;
+  $$.name = utype_to_string($1);
 };
 
 boolean_expression: expression COMP expression {
@@ -589,7 +613,9 @@ boolean_expression: boolean_expression OR boolean_expression {
       yyerror("BISON: bad or operation\n");
     }
   } else {
-    $$.type = BBOOL;
+    if (or_operation_c3a(&$$, &$1, &$3) == OP_FAILED){
+      yyerror("BISON: bad or operation\n");
+    }
   }
 };
 
@@ -613,6 +639,7 @@ boolean_expression: TTRUE | TFALSE {
 int init_analisi_sintactic(char* filename){
   int error = EXIT_SUCCESS;
 
+  instructions = (char**) malloc(N_INSTRUCCIONS_ADD * sizeof(char*));
   yyout = fopen(filename,"w");
 
   if (yyout == NULL)
@@ -634,6 +661,13 @@ int analisi_semantic(){
 }
 
 int end_analisi_sintactic(){
+  if (current_mode == PRGM){
+    for (int i = 0; i < line_counter; i++) {
+      //printf("%s\n", instructions[i]);
+      fprintf(yyout, "%s\n", instructions[i]);
+    }
+  }
+  
   int error = fclose(yyout);
 
   if(error == 0)

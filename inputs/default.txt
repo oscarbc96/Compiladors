@@ -1,28 +1,17 @@
-calc off 
+calc off
 
 // nested sentences 
-total := 0.0 
-i := 1 
+total := 0.0
+i := 1
 while (total < 1000.0) do
   if (i = 1) then
     total := total * 2
   else
     total := total - 1
-  fi    
-  i := -i 
-done 
-
+  fi
+  i := -i
+  if (total > 666.6 or total = 500.0) then
+    i := 1
+  fi
+done
 total
-
-// números de Fibonacci 
-n := 50 
-x := 1 
-x 
-y := 1 
-y
-for (index in 3..n) do    
-  fib := x + y
-  x := y    
-  y := fib    
-  fib 
-done 
