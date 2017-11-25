@@ -94,3 +94,66 @@ Is it possible to compare any type.
 ### Functions
 - `sqrt()`
 - `log()`
+
+### Program statements
+#### for
+```
+calc off
+
+b := 2
+
+for (a in b..4) do
+  5+5
+done
+```
+#### if
+```
+calc off
+
+a := 5
+
+if (a > 5) then
+  x:= 2
+elsif (a < 5) then
+  x:= 3
+elsif (a = 5) then
+  x:= 5
+fi
+```
+#### repeat
+```
+calc off
+
+a := 5
+
+repeat 
+  5 + 5
+  a := a +1
+until (a < 7)
+```
+#### switch
+```
+calc off
+
+a := 3
+
+switch (a) do
+  case a > 4 then
+    4 + 4
+    break
+  default then
+    5+5
+    break
+done
+```
+#### while
+```
+calc off
+
+a := 5
+
+while(a < 10) do
+  5+5
+  a := a +1
+done
+```
