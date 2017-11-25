@@ -465,7 +465,7 @@ expression: expression POW expression {
 expression: expression MOD expression {
   printf("BISON: Performing mod\n");
   if (current_mode == CALC){
-    if (pow_operation(&$$, $1, $3) == OP_FAILED){
+    if (mod_operation(&$$, $1, $3) == OP_FAILED){
       yyerror("BISON: bad mod\n");
     }
   } else {
