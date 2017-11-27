@@ -17,6 +17,7 @@ extern int line_counter;
 extern int instructions_capacity;
 extern char ** instructions;
 void create_variable(char ** variable);
+line * create_line(int line_number);
 line * merge(line *group1, line *group2);
 op_status emit(char *instruction);
 void complete(line *lines, int position);

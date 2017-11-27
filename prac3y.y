@@ -126,7 +126,7 @@ char * utype_to_string(uniontype value){
 %type <utype> boolean_expression
 %type <utype> check_mode
 %type <utype> id
-%type <utype> if_init
+%type <utype> save_line
 %type <utype> while_init
 %type <utype> repeat_init
 %type <utype> for_init
@@ -138,6 +138,16 @@ char * utype_to_string(uniontype value){
 %type <utype> array_content
 %type <utype> array_value
 %type <utype> array_position
+
+%type <utype> if_statement
+%type <utype> if_init
+%type <utype> else_init
+%type <utype> elsif_init
+%type <utype> elsif_else_fi
+%type <utype> elsif_init_emit
+%type <utype> if_end
+%type <utype> root
+%type <utype> condition
 
 %left ADD SUBSTRACT
 %left MULTIPLY DIVIDE MOD
@@ -332,33 +342,59 @@ array : SQUARE_BRACKET_OPEN array_statement {
 
 program_statement : if_statement | while_statement | repeat_statement | for_statement | switch_statement;
 
-if_statement : IF if_init PARENTHESIS_OPEN condition PARENTHESIS_CLOSE THEN root elsif_else_fi;
-
-if_init : {
-  printf("BISON: IF\n");
-  fprintf(yyout, "IF\n");
+if_init : IF PARENTHESIS_OPEN condition PARENTHESIS_CLOSE THEN {
+  strcpy(&($$.name), "IF ");
+  strcat(&($$.name), $3.name);
+  strcat(&($$.name), " GOTO");
+  emit(&($$.name));
+  $$.trueList = create_line(line_counter);
+  emit("GOTO");
+  $$.falseList = create_line(line_counter);
+  $$.intValue = line_counter;
 };
 
-elsif_else_fi : ELSIF elsif_init PARENTHESIS_OPEN condition PARENTHESIS_CLOSE THEN root elsif_else_fi;
-
-elsif_init : {
-  printf("BISON: ELSIF\n");
-  fprintf(yyout, "ELSIF\n");
+if_statement : if_init root elsif_else_fi {
+  complete($1.trueList, $1.intValue + 1);
+  complete($1.falseList, $3.intValue + 1);
 };
 
-elsif_else_fi : ELSE else_init root if_end;
-
-else_init : {
-  printf("BISON: ELSE\n");
-  fprintf(yyout, "ELSE\n");
+elsif_init : ELSIF PARENTHESIS_OPEN condition PARENTHESIS_CLOSE THEN {
+  strcpy(&($$.name), "IF ");
+  strcat(&($$.name), $3.name);
+  strcat(&($$.name), " GOTO");
+  emit(&($$.name));
+  $$.trueList = create_line(line_counter);
+  emit("GOTO");
+  $$.falseList = create_line(line_counter);
+  $$.intValue = line_counter - 2;
 };
 
-elsif_else_fi: if_end;
+elsif_init_emit : {
+  emit("GOTO");
+  $$.falseList = create_line(line_counter);
+}
 
-if_end : FI {
-  printf("BISON: END_IF\n");
-  fprintf(yyout, "END_IF\n");
+elsif_else_fi : elsif_init_emit elsif_init root elsif_else_fi {
+  complete($1.falseList, line_counter + 1);
+  complete($2.trueList, $2.intValue + 3);
+  complete($2.falseList, $4.intValue + 1);
+  $$.intValue = $2.intValue;
 };
+
+else_init : ELSE {
+  emit("GOTO");
+  $$.trueList = create_line(line_counter);
+  $$.intValue = line_counter;
+};
+
+elsif_else_fi : else_init root if_end {
+  complete($1.trueList, $3.intValue + 1);
+  $$.intValue = $1.intValue;
+};
+
+elsif_else_fi: if_end { $$ = $1; };
+
+if_end : FI { $$.intValue = line_counter; };
 
 switch_statement : SWITCH switch_init PARENTHESIS_OPEN id PARENTHESIS_CLOSE DO NEWLINE switch_case DONE{
   printf("BISON: END_SWITCH\n");
@@ -426,6 +462,7 @@ for_range: expression RANGE expression {
 };
 
 condition : boolean_expression {
+  $$ = $1;
   if($1.type != BBOOL)
     yyerror("Expression result must be boolean");
 }
@@ -574,13 +611,15 @@ expression: UTYPE {
 
 boolean_expression: expression COMP expression {
   printf("BISON: Performing comparation operation\n");
-  if (current_mode == CALC){
-    if (compare_operation(&$$, $1, $2.stringValue, $3) == OP_FAILED){
-      yyerror("BISON: bad comparation\n");
-    }
-  } else {
-    $$.type = BBOOL;
-  }
+  op_status status = OP_FAILED;
+
+  if (current_mode == CALC)
+    status = compare_operation(&$$, $1, $2.stringValue, $3);
+  else if (current_mode == PRGM)
+    status = compare_operation_c3a(&$$, &$1, $2.stringValue, &$3);
+  
+  if (status == OP_FAILED)
+    yyerror("BISON: bad comparation\n");
 };
 
 boolean_expression: NOT boolean_expression {
@@ -662,6 +701,7 @@ int analisi_semantic(){
 
 int end_analisi_sintactic(){
   if (current_mode == PRGM){
+    emit("HALT");
     for (int i = 0; i < line_counter; i++) {
       //printf("%s\n", instructions[i]);
       fprintf(yyout, "%s\n", instructions[i]);

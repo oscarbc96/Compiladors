@@ -7,6 +7,13 @@ void create_variable(char ** variable) {
   var_counter++;
 }
 
+line * create_line(int line_number) {
+  line *line = malloc(sizeof(line));
+  line->line_number = line_number;
+  line->next = NULL;
+  return line;
+}
+
 line * merge(line *group1, line *group2) {
   if (group1 == NULL)
     return group2;
@@ -14,7 +21,7 @@ line * merge(line *group1, line *group2) {
   line *result = group1;
 
   while (group1->next != NULL)
-    group1 = group1->next;
+    group1 = (line*) group1->next;
 
   group1->next = group2;
 
@@ -36,7 +43,9 @@ void complete(line *lines, int position) {
   line *line = lines;
   while (line != NULL) {
     char *instruction = instructions[line->line_number - 1];
-    sprintf(instruction, "%s %d", instruction, position);
+    char *instruction_complete = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
+    sprintf(instruction_complete, "%s %d", instruction, position);
+    instructions[line->line_number - 1] = instruction_complete;
     line = line->next;
   }
 }
@@ -150,9 +159,14 @@ op_status pow_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
 }
 
 op_status multiply_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
+  char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
+  create_variable(&result->name);
+
   if(op1->type == BINT && op2->type == BINT){
     result->intValue = op1->intValue * op2->intValue;
     result->type = BINT;
+
+    sprintf(instruction, "%s := %s MULI %s", result->name, op1->name, op2->name);
   }else if(op1->type == BFLOAT || op2->type == BFLOAT){
     result->type = BFLOAT;
 
@@ -163,14 +177,21 @@ op_status multiply_operation_c3a(uniontype *result, uniontype *op1, uniontype *o
     }else if(op1->type == BINT && op2->type == BFLOAT){
       result->floatValue = op1->intValue * op2->floatValue;
     }
+
+    sprintf(instruction, "%s := %s MULF %s", result->name, op1->name, op2->name);
   }else{
     return OP_FAILED;
   }
+
+  emit(instruction);
 
   return OP_SUCCESS;
 }
 
 op_status divide_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
+  char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
+  create_variable(&result->name);
+
   if((op2->type == BINT && op2->intValue == 0) || (op2->type == BFLOAT && op2->floatValue == 0.0)){
     return OP_FAILED;
   }
@@ -178,6 +199,8 @@ op_status divide_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2
   if(op1->type == BINT && op2->type == BINT){
     result->intValue = op1->intValue / op2->intValue;
     result->type = BINT;
+
+    sprintf(instruction, "%s := %s DIVI %s", result->name, op1->name, op2->name);
   }else if(op1->type == BFLOAT || op2->type == BFLOAT){
     result->type = BFLOAT;
 
@@ -188,17 +211,26 @@ op_status divide_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2
     }else if(op1->type == BINT && op2->type == BFLOAT){
       result->floatValue = op1->intValue / op2->floatValue;
     }
+
+    sprintf(instruction, "%s := %s DIVF %s", result->name, op1->name, op2->name);
   } else {
     return OP_FAILED;
   }
+
+  emit(instruction);
 
   return OP_SUCCESS;
 }
 
 op_status mod_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
+  char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
+  create_variable(&result->name);
+
   if(op1->type == BINT && op2->type == BINT){
     result->intValue = op1->intValue % op2->intValue;
     result->type = BINT;
+
+    sprintf(instruction, "%s := %s MODI %s", result->name, op1->name, op2->name);
   }else if(op1->type == BFLOAT || op2->type == BFLOAT){
     result->type = BFLOAT;
 
@@ -209,26 +241,65 @@ op_status mod_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
     }else if(op1->type == BINT && op2->type == BFLOAT){
       result->floatValue = fmodf(op1->intValue, op2->floatValue);
     }
+
+    sprintf(instruction, "%s := %s MODF %s", result->name, op1->name, op2->name);
   }else{
     return OP_FAILED;
   }
+
+  emit(instruction);
 
   return OP_SUCCESS;
 }
 
 op_status negate_operation_c3a(uniontype *result, uniontype *op){
+  char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
+  create_variable(&result->name);
+
   if(op->type == BINT){
     result->intValue = -op->intValue;
     result->type = BINT;
+
+    sprintf(instruction, "%s := CHSI %s", result->name, op->name);
   }else if(op->type == BFLOAT){
     result->floatValue = -op->floatValue;
     result->type = BFLOAT;
+
+    sprintf(instruction, "%s := CHSF %s", result->name, op->name);
   }
+
+  emit(instruction);
 };
 
 /* boolean operations */
 op_status compare_operation_c3a(uniontype *result, uniontype *op1, char *comp, uniontype *op2){
   result->type = BBOOL;
+
+  strcpy(result->name, op1->name);
+
+  if (strcmp(comp, ">") == 0) {
+    strcat(result->name, " GT");
+  } else if (strcmp(comp, "<") == 0) {
+    strcat(result->name, " LT");
+  } else if (strcmp(comp, ">=") == 0) {
+    strcat(result->name, " GE");
+  } else if (strcmp(comp, "<=") == 0) {
+    strcat(result->name, " LE");
+  } else if (strcmp(comp, "=") == 0) {
+    strcat(result->name, " EQ ");
+  } else if (strcmp(comp, "<>") == 0) {
+    strcat(result->name, " NE ");
+  }
+
+  bool add_symbol = (strcmp(comp, "=") != 0 && strcmp(comp, "<>") != 0);
+  if(add_symbol && op1->type == BINT && op2->type == BINT){
+    strcat(result->name, "I ");
+  }else if(add_symbol && (op1->type == BFLOAT || op2->type == BFLOAT)){
+    strcat(result->name, "F ");
+  }
+
+  strcat(result->name, op2->name);
+
   if(op1->type == BSTRING && op2->type == BSTRING){
     result->boolValue = strcmp(op1->stringValue, op2->stringValue) == 0;
   }else if(op1->type == BINT && op2->type == BINT){
@@ -242,7 +313,7 @@ op_status compare_operation_c3a(uniontype *result, uniontype *op1, char *comp, u
       result->boolValue = op1->intValue <= op2->intValue;
     } else if (strcmp(comp, "=") == 0) {
       result->boolValue = op1->intValue == op2->intValue;
-    } else if (strcmp(comp, "!=") == 0) {
+    } else if (strcmp(comp, "<>") == 0) {
       result->boolValue = op1->intValue != op2->intValue;
     }
   }else if(op1->type == BFLOAT && op2->type == BFLOAT){
@@ -256,7 +327,7 @@ op_status compare_operation_c3a(uniontype *result, uniontype *op1, char *comp, u
       result->boolValue = op1->floatValue <= op2->floatValue;
     } else if (strcmp(comp, "=") == 0) {
       result->boolValue = op1->floatValue == op2->floatValue;
-    } else if (strcmp(comp, "!=") == 0) {
+    } else if (strcmp(comp, "<>") == 0) {
       result->boolValue = op1->floatValue != op2->floatValue;
     }
   }else if(op1->type == BFLOAT && op2->type == BINT){
@@ -270,7 +341,7 @@ op_status compare_operation_c3a(uniontype *result, uniontype *op1, char *comp, u
       result->boolValue = op1->floatValue <= op2->intValue;
     } else if (strcmp(comp, "=") == 0) {
       result->boolValue = op1->floatValue == op2->intValue;
-    } else if (strcmp(comp, "!=") == 0) {
+    } else if (strcmp(comp, "<>") == 0) {
       result->boolValue = op1->floatValue != op2->intValue;
     }
   }else if(op1->type == BINT && op2->type == BFLOAT){
@@ -284,7 +355,7 @@ op_status compare_operation_c3a(uniontype *result, uniontype *op1, char *comp, u
       result->boolValue = op1->intValue <= op2->floatValue;
     } else if (strcmp(comp, "=") == 0) {
       result->boolValue = op1->intValue == op2->floatValue;
-    } else if (strcmp(comp, "!=") == 0) {
+    } else if (strcmp(comp, "<>") == 0) {
       result->boolValue = op1->intValue != op2->floatValue;
     }
   } else {
