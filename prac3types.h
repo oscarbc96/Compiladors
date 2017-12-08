@@ -9,7 +9,7 @@ typedef enum {BINT, BFLOAT, BSTRING, BBOOL} type;
 
 typedef struct {
   int line_number;
-  struct line *next;
+  void* next;
 } line;
 
 typedef struct{

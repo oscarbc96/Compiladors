@@ -1,0 +1,7 @@
+calc off
+
+if (not false) then 
+  123
+  123
+  123
+fi

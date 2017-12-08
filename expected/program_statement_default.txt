@@ -6,10 +6,10 @@
 6: GOTO 23
 7: IF i EQ 1 GOTO 9
 8: GOTO 12
-9: $t03 := total MULF 2.000000
+9: $t03 := total MULF 2
 10: total := $t03
 11: GOTO 14
-12: $t04 := total SUBF 1.000000
+12: $t04 := total SUBF 1
 13: total := $t04
 14: $t05 := CHSI i
 15: i := $t05

@@ -6,6 +6,7 @@
 #include "./symtab/symtab.h"
 #include "./operations.h"
 #include "./C3A.h"
+#include "./bison_aux.h"
 
 #define YYLMAX 100
 
@@ -14,74 +15,14 @@ extern int yylineno;
 extern char* yytext;
 extern int yylex();
 extern void yyerror(const char*);
-pmode current_mode;
 
+pmode current_mode;
 uniontype current_switch_id;
 
 int var_counter = 1;
 int line_counter = 0;
 int instructions_capacity = N_INSTRUCCIONS_ADD;
 char ** instructions;
-
-char * get_type(uniontype value){
-  switch(value.type){
-    case BINT:
-      return "INT";
-      break;
-    case BFLOAT:
-      return "FLOAT";
-      break;
-    case BSTRING:
-      return "STRING";
-      break;
-    case BBOOL:
-      return "BOOL";
-      break;
-  };
-}
-
-char * utype_to_string(uniontype value){
-  char *str = malloc(12);
-  char *aux = malloc(100);
-  uniontype *auxt = &value;
-
-  switch(value.type){
-    case BINT:
-      sprintf(str, "%d", value.intValue);
-      break;
-    case BFLOAT:
-      sprintf(str, "%f", value.floatValue);
-      break;
-    case BSTRING:
-      return value.stringValue;
-      break;
-    case BBOOL:
-      if(value.boolValue)
-        return "true";
-      else
-        return "false";
-      break;
-  };
-  return str;
-}
-
-#include <regex.h>
-
-bool reg_matches(char *str, char *pattern){
-  regex_t re;
-  int ret;
-
-  if (regcomp(&re, pattern, REG_EXTENDED) != 0)
-    return false;
-
-  ret = regexec(&re, str, (size_t) 0, NULL, 0);
-  regfree(&re);
-
-  if (ret == 0)
-    return true;
-
-  return false;
-}
 
 %}
 
@@ -711,13 +652,15 @@ boolean_expression: expression COMP expression {
 };
 
 boolean_expression: NOT boolean_expression {
-  if (current_mode == CALC){
-    if (not_operation(&$$, $2) == OP_FAILED){
-      yyerror("BISON: bad not operation\n");
-    }
-  } else {
-    $$.type = BBOOL;
-  }
+  op_status status = OP_FAILED;
+
+  if (current_mode == CALC)
+    status = not_operation(&$$, $2);
+  else if (current_mode == PRGM)
+    status = not_operation_c3a(&$$, &$2);
+  
+  if (status == OP_FAILED)
+    yyerror("BISON: bad not operation\n");
 };
 
 boolean_expression: boolean_expression AND boolean_expression {
@@ -754,8 +697,18 @@ boolean_expression: ID_B {
     yyerror("ID not defined");
 };
 
-boolean_expression: TTRUE | TFALSE {
+boolean_expression: TTRUE {
+  emit("GOTO");
   $$ = $1;
+  $$.trueList = create_line(line_counter);
+  $$.name = utype_to_string($1);
+};
+
+boolean_expression: TFALSE {
+  emit("GOTO");
+  $$ = $1;
+  $$.falseList = create_line(line_counter);
+  $$.name = utype_to_string($1);
 };
 
 %%
@@ -781,33 +734,13 @@ int analisi_semantic(){
     error =  EXIT_FAILURE;
 
  return error;
-
-}
-
-int optimize_line_str_len(char *s){
-  int i = 0;
-  while (strncmp(s+i, " ", 1) != 0) 
-    i++;
-
-  return i+6;
-}
-
-int optimize_line(int line){
-  int length = optimize_line_str_len(instructions[line]);
-  int result = atoi(instructions[line]+length);
-
-  if (reg_matches(instructions[line], "[0-9]+: GOTO"))
-    result = optimize_line(result - 1);
-  else
-    result = line + 1;
-
-  return result;
 }
 
 int end_analisi_sintactic(){
   if (current_mode == PRGM){
     emit("HALT");
 
+    /* optmize goto lines */ 
     for (int i = 0; i < line_counter; i++) {
       if (reg_matches(instructions[i], "[0-9]+: GOTO")){
         int length = optimize_line_str_len(instructions[i]);

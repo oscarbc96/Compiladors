@@ -1,5 +1,6 @@
 #include "./C3A.h"
 #include "./prac3types.h"
+#include "bison_aux.h"
 
 void create_variable(char ** variable) {
   *variable = (char*) malloc(5 * sizeof(char));
@@ -37,8 +38,6 @@ op_status emit(char *instruction) {
   instructions[line_counter] = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
   sprintf(instructions[line_counter], "%d: %s", line_counter+1, instruction);
   line_counter++;
-
-  printf("BISON: Emiting -> %d: %s\n", line_counter, instruction);
 }
 
 void complete(line *lines, int position) {
@@ -48,7 +47,6 @@ void complete(line *lines, int position) {
     char *instruction_complete = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
     sprintf(instruction_complete, "%s %d", instruction, position);
     instructions[line->line_number - 1] = instruction_complete;
-    printf("BISON: Completing line %d -> %d\n", line->line_number, position);
     line = line->next;
   }
 }
@@ -58,14 +56,11 @@ op_status add_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
   char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
   create_variable(&result->name);
 
-  if(op1->type == BSTRING || op2->type == BSTRING){
-    result->type = BSTRING;
-    sprintf(instruction, "%s := %s ADDS %s", result->name, op1->name, op2->name);
-  }else if(op1->type == BINT && op2->type == BINT){
+  if(op1->type == BINT && op2->type == BINT){
     result->type = BINT;
-    result->intValue = op1->intValue + op2->intValue;
     sprintf(instruction, "%s := %s ADDI %s", result->name, op1->name, op2->name);
   }else if(op1->type == BFLOAT || op2->type == BFLOAT){
+    result->type = BFLOAT;
     sprintf(instruction, "%s := %s ADDF %s", result->name, op1->name, op2->name);
   }else{
     return OP_FAILED;
@@ -82,11 +77,9 @@ op_status substract_operation_c3a(uniontype *result, uniontype *op1, uniontype *
 
   if(op1->type == BINT && op2->type == BINT){
     result->type = BINT;
-
     sprintf(instruction, "%s := %s SUBI %s", result->name, op1->name, op2->name);
   }else if(op1->type == BFLOAT || op2->type == BFLOAT){
     result->type = BFLOAT;
-
     sprintf(instruction, "%s := %s SUBF %s", result->name, op1->name, op2->name);
   } else {
     return OP_FAILED;
@@ -141,9 +134,8 @@ op_status divide_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2
   char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
   create_variable(&result->name);
 
-  if((op2->type == BINT && op2->intValue == 0) || (op2->type == BFLOAT && op2->floatValue == 0.0)){
+  if((op2->type == BINT && op2->intValue == 0) || (op2->type == BFLOAT && op2->floatValue == 0.0))
     return OP_FAILED;
-  }
 
   if(op1->type == BINT && op2->type == BINT){
     result->intValue = op1->intValue / op2->intValue;
@@ -185,17 +177,11 @@ op_status negate_operation_c3a(uniontype *result, uniontype *op){
   char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
   create_variable(&result->name);
 
-  if(op->type == BINT){
-    result->intValue = -op->intValue;
-    result->type = BINT;
-
+  result->type = op->type;
+  if(op->type == BINT)
     sprintf(instruction, "%s := CHSI %s", result->name, op->name);
-  }else if(op->type == BFLOAT){
-    result->floatValue = -op->floatValue;
-    result->type = BFLOAT;
-
+  else
     sprintf(instruction, "%s := CHSF %s", result->name, op->name);
-  }
 
   emit(instruction);
 };
@@ -208,26 +194,24 @@ op_status compare_operation_c3a(uniontype *result, uniontype *op1, char *comp, u
   strcpy(instruction, "IF ");
   strcat(instruction, op1->name);
 
-  if (strcmp(comp, ">") == 0) {
+  if (strcmp(comp, ">") == 0)
     strcat(instruction, " GT");
-  } else if (strcmp(comp, "<") == 0) {
+  else if (strcmp(comp, "<") == 0)
     strcat(instruction, " LT");
-  } else if (strcmp(comp, ">=") == 0) {
+  else if (strcmp(comp, ">=") == 0)
     strcat(instruction, " GE");
-  } else if (strcmp(comp, "<=") == 0) {
+  else if (strcmp(comp, "<=") == 0)
     strcat(instruction, " LE");
-  } else if (strcmp(comp, "=") == 0) {
+  else if (strcmp(comp, "=") == 0)
     strcat(instruction, " EQ ");
-  } else if (strcmp(comp, "<>") == 0) {
+  else if (strcmp(comp, "<>") == 0)
     strcat(instruction, " NE ");
-  }
 
   bool add_symbol = (strcmp(comp, "=") != 0 && strcmp(comp, "<>") != 0);
-  if(add_symbol && op1->type == BINT && op2->type == BINT){
+  if(add_symbol && op1->type == BINT && op2->type == BINT)
     strcat(instruction, "I ");
-  }else if(add_symbol && (op1->type == BFLOAT || op2->type == BFLOAT)){
+  else if(add_symbol && (op1->type == BFLOAT || op2->type == BFLOAT))
     strcat(instruction, "F ");
-  }
 
   strcat(instruction, op2->name);
   strcat(instruction, " GOTO");
@@ -280,4 +264,25 @@ op_status or_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
   }
 
   return OP_SUCCESS;
+}
+
+/* optmizacions */
+int optimize_line_str_len(char *s){
+  int i = 0;
+  while (strncmp(s+i, " ", 1) != 0) 
+    i++;
+
+  return i+6;
+}
+
+int optimize_line(int line){
+  int length = optimize_line_str_len(instructions[line]);
+  int result = atoi(instructions[line]+length);
+
+  if (reg_matches(instructions[line], "[0-9]+: GOTO"))
+    result = optimize_line(result - 1);
+  else
+    result = line + 1;
+
+  return result;
 }
