@@ -24,12 +24,12 @@ int return_token(int tok, char *s) {
         printf("FLEX: ID yytex: %s -> %s\n", yytext, yylval.utype.stringValue);
       }
     }
-  }else if (tok == COMP) {
+  } else if (tok == COMP) {
     yylval.utype.stringValue = strdup(yytext); 
     yylval.utype.type = BSTRING; 
 
     printf("FLEX: COMP yytex: %s -> %s\n", yytext, yylval.utype.stringValue);
-  }else if (tok == TTRUE || tok == TFALSE) {
+  } else if (tok == TTRUE || tok == TFALSE) {
     yylval.utype.type = BBOOL; 
     if (tok == TTRUE){
       yylval.utype.boolValue = true;
@@ -38,9 +38,7 @@ int return_token(int tok, char *s) {
       yylval.utype.boolValue = false;
       printf("FLEX: %s yytex: false\n", s);
     }
-  }else if (tok == NEWLINE) {
-    printf("FLEX: NEWLINE\n");
-  }else{
+  } else if (tok != NEWLINE) {
     printf("FLEX: %s yytex: %s\n", s, yytext);
   }
   return tok;

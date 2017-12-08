@@ -3,6 +3,8 @@ calc off
 a := 5
 
 repeat 
-  5 + 5
-  a := a +1
+  123 
+  123 
+  123
+  a := a + 1
 until (a < 7)

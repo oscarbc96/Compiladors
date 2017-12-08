@@ -1,0 +1,21 @@
+calc off
+
+a := 3
+
+switch (a) do
+  case 3 then
+    123
+    123
+    123
+    break
+  case 4 then
+    123
+    123
+    123
+    break
+  default then
+    123
+    123
+    123
+    break
+done

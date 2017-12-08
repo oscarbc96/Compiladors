@@ -15,7 +15,7 @@ typedef struct {
 typedef struct{
   union {
     int intValue;
-    float floatValue;
+    double floatValue;
     char *stringValue;
     bool boolValue;
   };

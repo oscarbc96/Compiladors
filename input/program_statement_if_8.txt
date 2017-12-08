@@ -1,0 +1,9 @@
+calc off
+
+a := 20.0
+
+if ((a > 20 or a < 20) and (a <> 20 or a = 20)) then 
+  123
+  123
+  123
+fi

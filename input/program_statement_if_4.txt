@@ -1,0 +1,17 @@
+calc off
+
+a := 20.0
+
+if (a > 20) then
+  123
+  123
+  123
+elsif (a < 20) then
+  123
+  123
+  123
+elsif (a = 20) then
+  123
+  123
+  123
+fi

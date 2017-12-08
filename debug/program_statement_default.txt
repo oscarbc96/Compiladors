@@ -1,0 +1,100 @@
+FLEX: Detected mode PRGM
+BISON: Starting in mode PRGM
+FLEX: COMMENT -> FLEX: ASSIGN yytex: :=
+FLEX: FLOAT yytex: 0.0 -> 0.000000
+BISON: Emiting -> 1: $t01 := 0.000000
+BISON: Emiting -> 2: total := $t01
+FLEX: ASSIGN yytex: :=
+FLEX: INT yytex: 1 -> 1
+BISON: Emiting -> 3: $t02 := 1
+BISON: Emiting -> 4: i := $t02
+FLEX: WHILE yytex: while
+BISON: Checking mode
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: ID yytex: total -> total
+BISON: Looking for ID total
+FLEX: COMP yytex: < -> <
+FLEX: FLOAT yytex: 1000.0 -> 1000.000000
+FLEX: PARENTHESIS_CLOSE yytex: )
+BISON: Emiting -> 5: IF total LTF 1000.000000 GOTO
+BISON: Emiting -> 6: GOTO
+FLEX: DO yytex: do
+FLEX: IF yytex: if
+BISON: Checking mode
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: ID yytex: i -> i
+BISON: Looking for ID i
+FLEX: COMP yytex: = -> =
+FLEX: INT yytex: 1 -> 1
+FLEX: PARENTHESIS_CLOSE yytex: )
+BISON: Emiting -> 7: IF i EQ 1 GOTO
+BISON: Emiting -> 8: GOTO
+FLEX: THEN yytex: then
+BISON: Completing line 7 -> 9
+FLEX: ID yytex: total -> total
+FLEX: ASSIGN yytex: :=
+FLEX: ID yytex: total -> total
+FLEX: MULTIPLY yytex: *
+BISON: Looking for ID total
+FLEX: INT yytex: 2 -> 2
+BISON: Emiting -> 9: $t03 := total MULF 2
+BISON: Emiting -> 10: total := $t03
+FLEX: ELSE yytex: else
+BISON: Emiting -> 11: GOTO
+FLEX: ID yytex: total -> total
+FLEX: ASSIGN yytex: :=
+FLEX: ID yytex: total -> total
+FLEX: SUBSTRACT yytex: -
+BISON: Looking for ID total
+FLEX: INT yytex: 1 -> 1
+BISON: Emiting -> 12: $t04 := total SUBF 1
+BISON: Emiting -> 13: total := $t04
+FLEX: FI yytex: fi
+BISON: Completing line 8 -> 12
+BISON: Completing line 11 -> 14
+FLEX: ID yytex: i -> i
+FLEX: ASSIGN yytex: :=
+FLEX: SUBSTRACT yytex: -
+FLEX: ID yytex: i -> i
+BISON: Looking for ID i
+BISON: Emiting -> 14: $t05 := CHSI i
+BISON: Emiting -> 15: i := $t05
+FLEX: IF yytex: if
+BISON: Checking mode
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: ID yytex: total -> total
+BISON: Looking for ID total
+FLEX: COMP yytex: > -> >
+FLEX: FLOAT yytex: 666.6 -> 666.600000
+FLEX: OR yytex: or
+BISON: Emiting -> 16: IF total GTF 666.600000 GOTO
+BISON: Emiting -> 17: GOTO
+FLEX: ID yytex: total -> total
+BISON: Looking for ID total
+FLEX: COMP yytex: = -> =
+FLEX: FLOAT yytex: 500.0 -> 500.000000
+FLEX: PARENTHESIS_CLOSE yytex: )
+BISON: Emiting -> 18: IF total EQ 500.000000 GOTO
+BISON: Emiting -> 19: GOTO
+BISON: Completing line 17 -> 18
+FLEX: THEN yytex: then
+BISON: Completing line 16 -> 20
+BISON: Completing line 18 -> 20
+FLEX: ID yytex: i -> i
+FLEX: ASSIGN yytex: :=
+FLEX: INT yytex: 1 -> 1
+BISON: Emiting -> 20: $t06 := 1
+BISON: Emiting -> 21: i := $t06
+FLEX: FI yytex: fi
+BISON: Completing line 19 -> 22
+FLEX: DONE yytex: done
+BISON: Completing line 5 -> 7
+BISON: Emiting -> 22: GOTO
+BISON: Completing line 22 -> 5
+BISON: Completing line 6 -> 23
+FLEX: ID yytex: total -> total
+BISON: Looking for ID total
+BISON: Emiting -> 23: PARAM total
+BISON: Emiting -> 24: CALL PUTF,1
+The compilation has been successful
+BISON: Emiting -> 25: HALT

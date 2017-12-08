@@ -3,5 +3,7 @@ calc off
 b := 2
 
 for (a in b..4) do
-  5+5
+  123
+  123
+  123
 done

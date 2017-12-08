@@ -24,11 +24,12 @@ $(SRCY) : $(EYACC)
 	$(YACC) $(YFLAGS) $<
 
 clean : 
-	rm -f *~ $(BIN) $(OBJ) $(SRCL) $(SRCY) $(OTHERS) ./outputs/*
+	rm -f *~ $(BIN) $(OBJ) $(SRCL) $(SRCY) $(OTHERS) ./output/* ./debug/*
 
 test : clean all
-	for filename in ./inputs/*.txt; do \
+	for filename in ./input/program_statement_defa*.txt; do \
 		file=$$(basename $$filename); \
 		echo "Running "$$filename; \
-    ./$(BIN) ./inputs/$$file ./outputs/$$file &> ./outputs/$$file.debug; \
+    ./$(BIN) ./input/$$file ./output/$$file &> ./debug/$$file; \
+    python3 diff.py --from ./output/$$file --to ./expected/$$file; \
   done

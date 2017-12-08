@@ -1,0 +1,25 @@
+1: $t01 := 0.000000
+2: total := $t01
+3: $t02 := 1
+4: i := $t02
+5: IF total LTF 1000.000000 GOTO 7
+6: GOTO 23
+7: IF i EQ 1 GOTO 9
+8: GOTO 12
+9: $t03 := total MULF 2
+10: total := $t03
+11: GOTO 14
+12: $t04 := total SUBF 1
+13: total := $t04
+14: $t05 := CHSI i
+15: i := $t05
+16: IF total GTF 666.600000 GOTO 20
+17: GOTO 18
+18: IF total EQ 500.000000 GOTO 20
+19: GOTO 5
+20: $t06 := 1
+21: i := $t06
+22: GOTO 5
+23: PARAM total
+24: CALL PUTF,1
+25: HALT

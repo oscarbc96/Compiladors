@@ -33,6 +33,9 @@ $ ./prac3 INPUT_FILE OUTPUT_FILE
 ```sh
 $ make test
 ```
+```sh
+FILE=program_statement_if_8 && make clean && make && ./prac3 ./input/$FILE.txt ./output/$FILE.txt && python3 diff.py --from ./output/$FILE.txt --to ./expected/$FILE.txt
+```
 ## Examples
 
 All examples are defined in `inputs` folder.

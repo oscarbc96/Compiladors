@@ -16,6 +16,7 @@ op_status calculate_result_type(uniontype *result, uniontype op1, uniontype op2)
 
 /* math operations */
 op_status add_operation(uniontype *result, uniontype op1, uniontype op2){
+  printf("BISON: Performing add\n");
   if(op1.type == BSTRING || op2.type == BSTRING){
     result->type = BSTRING;
 
@@ -62,6 +63,7 @@ op_status add_operation(uniontype *result, uniontype op1, uniontype op2){
 }
 
 op_status substract_operation(uniontype *result, uniontype op1, uniontype op2){
+  printf("BISON: Performing substract\n");
   if(op1.type == BINT && op2.type == BINT){
     result->intValue = op1.intValue - op2.intValue;
     result->type = BINT;
@@ -83,6 +85,7 @@ op_status substract_operation(uniontype *result, uniontype op1, uniontype op2){
 }
 
 op_status pow_operation(uniontype *result, uniontype op1, uniontype op2){
+  printf("BISON: Performing pow\n");
   if(op1.type == BINT && op2.type == BINT){
     result->intValue = pow(op1.intValue, op2.intValue);
     result->type = BINT;
@@ -104,6 +107,7 @@ op_status pow_operation(uniontype *result, uniontype op1, uniontype op2){
 }
 
 op_status multiply_operation(uniontype *result, uniontype op1, uniontype op2){
+  printf("BISON: Performing multiply\n");
   if(op1.type == BINT && op2.type == BINT){
     result->intValue = op1.intValue * op2.intValue;
     result->type = BINT;
@@ -125,6 +129,7 @@ op_status multiply_operation(uniontype *result, uniontype op1, uniontype op2){
 }
 
 op_status divide_operation(uniontype *result, uniontype op1, uniontype op2){
+  printf("BISON: Performing divide\n");
   if((op2.type == BINT && op2.intValue == 0) || (op2.type == BFLOAT && op2.floatValue == 0.0)){
     return OP_FAILED;
   }
@@ -150,6 +155,7 @@ op_status divide_operation(uniontype *result, uniontype op1, uniontype op2){
 }
 
 op_status mod_operation(uniontype *result, uniontype op1, uniontype op2){
+  printf("BISON: Performing mod\n");
   if(op1.type == BINT && op2.type == BINT){
     result->intValue = op1.intValue % op2.intValue;
     result->type = BINT;
@@ -171,6 +177,7 @@ op_status mod_operation(uniontype *result, uniontype op1, uniontype op2){
 }
 
 op_status negate_operation(uniontype *result, uniontype op){
+  printf("BISON: Performing negate\n");
   if(op.type == BINT){
     result->intValue = -op.intValue;
     result->type = BINT;
@@ -182,6 +189,8 @@ op_status negate_operation(uniontype *result, uniontype op){
 
 /* boolean operations */
 op_status compare_operation(uniontype *result, uniontype op1, char *comp, uniontype op2){
+  printf("BISON: Performing comparation operation\n");
+  
   result->type = BBOOL;
   if(op1.type == BSTRING && op2.type == BSTRING){
     result->boolValue = strcmp(op1.stringValue, op2.stringValue) == 0;
@@ -249,6 +258,7 @@ op_status compare_operation(uniontype *result, uniontype op1, char *comp, uniont
 }
 
 op_status not_operation(uniontype *result, uniontype op){
+  printf("BISON: Performing not operation\n");
   if(op.type == BBOOL){
     result->type = BBOOL;
     result->boolValue = !op.boolValue;
@@ -260,6 +270,7 @@ op_status not_operation(uniontype *result, uniontype op){
 }
 
 op_status and_operation(uniontype *result, uniontype op1, uniontype op2){
+  printf("BISON: Performing and operation\n");
   if(op1.type == BBOOL && op2.type == BBOOL){
     result->type = BBOOL;
     result->boolValue = op1.boolValue && op2.boolValue;
@@ -271,6 +282,8 @@ op_status and_operation(uniontype *result, uniontype op1, uniontype op2){
 }
 
 op_status or_operation(uniontype *result, uniontype op1, uniontype op2){
+  printf("BISON: Performing or operation\n");
+
   if(op1.type == BBOOL && op2.type == BBOOL){
     result->type = BBOOL;
     result->boolValue = op1.boolValue || op2.boolValue;

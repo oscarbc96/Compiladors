@@ -1,0 +1,15 @@
+1: $t01 := 2
+2: b := $t01
+3: a := b
+4: IF a LTI 4 GOTO 6
+5: GOTO 15
+6: PARAM 123
+7: CALL PUTI,1
+8: PARAM 123
+9: CALL PUTI,1
+10: PARAM 123
+11: CALL PUTI,1
+12: $t02 := a ADDI 1
+13: a := $t02
+14: GOTO 4
+15: HALT
