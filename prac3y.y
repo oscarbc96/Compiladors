@@ -740,18 +740,6 @@ int end_analisi_sintactic(){
   if (current_mode == PRGM){
     emit("HALT");
 
-    /* optmize goto lines */ 
-    for (int i = 0; i < line_counter; i++) {
-      if (reg_matches(instructions[i], "[0-9]+: GOTO")){
-        int length = optimize_line_str_len(instructions[i]);
-        int line = atoi(instructions[i]+length);
-        int new_line = optimize_line(line - 1);
-        
-        if (line != new_line)
-          sprintf(instructions[i], "%d: GOTO %d", i+1, new_line);
-      }
-    }
-
     for (int i = 0; i < line_counter; i++)
       fprintf(yyout, "%s\n", instructions[i]);
   }

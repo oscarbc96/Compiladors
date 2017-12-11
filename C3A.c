@@ -265,24 +265,3 @@ op_status or_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
 
   return OP_SUCCESS;
 }
-
-/* optmizacions */
-int optimize_line_str_len(char *s){
-  int i = 0;
-  while (strncmp(s+i, " ", 1) != 0) 
-    i++;
-
-  return i+6;
-}
-
-int optimize_line(int line){
-  int length = optimize_line_str_len(instructions[line]);
-  int result = atoi(instructions[line]+length);
-
-  if (reg_matches(instructions[line], "[0-9]+: GOTO"))
-    result = optimize_line(result - 1);
-  else
-    result = line + 1;
-
-  return result;
-}

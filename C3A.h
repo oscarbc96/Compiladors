@@ -36,7 +36,3 @@ op_status compare_operation_c3a(uniontype *result, uniontype *op1, char *comp, u
 op_status not_operation_c3a(uniontype *result, uniontype *op);
 op_status and_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2);
 op_status or_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2);
-
-/* optmizacions */
-int optimize_line_str_len(char *s);
-int optimize_line(int line);
