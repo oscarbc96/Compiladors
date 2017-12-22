@@ -67,7 +67,7 @@ op_status add_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
   }
 
   emit(instruction);
-
+  
   return OP_SUCCESS;
 }
 
@@ -91,23 +91,21 @@ op_status substract_operation_c3a(uniontype *result, uniontype *op1, uniontype *
 }
 
 op_status pow_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
-  if(op1->type == BINT && op2->type == BINT){
-    result->intValue = pow(op1->intValue, op2->intValue);
-    result->type = BINT;
-  }else if(op1->type == BFLOAT || op2->type == BFLOAT){
-    result->type = BFLOAT;
-
-    if(op1->type == BFLOAT && op2->type == BFLOAT){
-      result->floatValue = pow(op1->floatValue, op2->floatValue);
-    }else if(op1->type == BFLOAT && op2->type == BINT){
-      result->floatValue = pow(op1->floatValue, op2->intValue);
-    }else if(op1->type == BINT && op2->type == BFLOAT){
-      result->floatValue = pow(op1->intValue, op2->floatValue);
-    }
-  }else{
+  if ((op1->type != BINT && op1->type != BFLOAT) || (op2->type != BINT && op2->type != BFLOAT))
     return OP_FAILED;
-  }
 
+  char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
+  create_variable(&result->name);
+
+  sprintf(instruction, "PARAM %s", op1->name);
+  emit(instruction);
+
+  sprintf(instruction, "PARAM %s", op2->name);
+  emit(instruction);
+
+  sprintf(instruction, "%s := CALL POW,2", result->name);
+  emit(instruction);
+  
   return OP_SUCCESS;
 }
 
@@ -231,6 +229,7 @@ op_status not_operation_c3a(uniontype *result, uniontype *op){
     result->type = BBOOL;
     result->trueList = op->falseList;
     result->falseList = op->trueList;
+    result->nextList = NULL;
   }else{
     return OP_FAILED;
   }
@@ -238,14 +237,14 @@ op_status not_operation_c3a(uniontype *result, uniontype *op){
   return OP_SUCCESS;
 }
 
-op_status and_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
+op_status and_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2, uniontype *m){
   if(op1->type == BBOOL && op2->type == BBOOL){
     result->type = BBOOL;
     result->intValue = op1->intValue;
     result->trueList = op2->trueList;
     result->falseList = merge(op1->falseList, op2->falseList);
     result->nextList = NULL;
-    complete(op1->trueList, op2->intValue - 1);
+    complete(op1->trueList, m->intValue + 1);
   }else{
     return OP_FAILED;
   }
@@ -253,15 +252,49 @@ op_status and_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
   return OP_SUCCESS;
 }
 
-op_status or_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
+op_status or_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2, uniontype *m){
   if(op1->type == BBOOL && op2->type == BBOOL){
     result->type = BBOOL;
     result->trueList = merge(op1->trueList, op2->trueList);
     result->falseList = op2->falseList;
-    complete(op1->falseList, op2->intValue - 1);
+    complete(op1->falseList, m->intValue + 1);
   }else{
     return OP_FAILED;
   }
 
+  return OP_SUCCESS;
+}
+
+/* functions */
+
+op_status sqrt_function_c3a(uniontype *result, uniontype *op){
+  if (op->type != BINT && op->type != BFLOAT)
+    return OP_FAILED;
+
+  char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
+  create_variable(&result->name);
+
+  sprintf(instruction, "PARAM %s", op->name);
+  emit(instruction);
+
+  sprintf(instruction, "%s := CALL SQRT,1", result->name);
+  emit(instruction);
+  
+  return OP_SUCCESS;
+}
+
+op_status log_function_c3a(uniontype *result, uniontype *op){
+  if (op->type != BINT && op->type != BFLOAT)
+    return OP_FAILED;
+
+  char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
+  create_variable(&result->name);
+
+  sprintf(instruction, "PARAM %s", op->name);
+  emit(instruction);
+
+  sprintf(instruction, "%s := CALL LOG,1", result->name);
+  emit(instruction);
+  
   return OP_SUCCESS;
 }

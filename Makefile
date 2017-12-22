@@ -22,7 +22,6 @@ $(SRCL) : $(ELEX)
 
 $(SRCY) : $(EYACC)
 	$(YACC) $(YFLAGS) $<
-
 clean : 
 	rm -f *~ $(BIN) $(OBJ) $(SRCL) $(SRCY) $(OTHERS) ./output/* ./debug/*
 

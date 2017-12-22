@@ -1,0 +1,4 @@
+1: $t01 := 1 ADDI 1
+2: PARAM $t01
+3: CALL PUTI,1
+4: HALT

@@ -34,5 +34,9 @@ op_status negate_operation_c3a(uniontype *result, uniontype *op);
 /* boolean operations */
 op_status compare_operation_c3a(uniontype *result, uniontype *op1, char *comp, uniontype *op2);
 op_status not_operation_c3a(uniontype *result, uniontype *op);
-op_status and_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2);
-op_status or_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2);
+op_status and_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2, uniontype *m);
+op_status or_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2, uniontype *m);
+
+/* functions */
+op_status sqrt_function_c3a(uniontype *result, uniontype *op);
+op_status log_function_c3a(uniontype *result, uniontype *op);

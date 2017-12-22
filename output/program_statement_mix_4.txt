@@ -1,0 +1,16 @@
+1: $t01 := 3
+2: x := $t01
+3: IF 3 LTI x GOTO 11
+4: GOTO 5
+5: IF 4 EQ x GOTO 7
+6: GOTO 14
+7: IF 3 GTI x GOTO 14
+8: GOTO 9
+9: IF x EQ x GOTO 14
+10: GOTO 11
+11: PARAM x
+12: CALL PUTI,1
+13: GOTO 16
+14: $t02 := 1
+15: x := $t02
+16: HALT

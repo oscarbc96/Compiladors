@@ -97,17 +97,14 @@ char ** instructions;
 %type <utype> array_position
 
 %type <utype> if_statement
-%type <utype> if_init
-%type <utype> else_init
-%type <utype> elsif_init
-%type <utype> elsif_else_fi
-%type <utype> elsif_init_emit
-%type <utype> if_end
+%type <utype> elsif_recursion
+%type <utype> elsif_statement
 %type <utype> root
 %type <utype> condition
 %type <utype> while_statement
 %type <utype> program_statement
 %type <utype> save_position
+%type <utype> goto_exit
 %type <utype> for_statement
 %type <utype> repeat_statement
 %type <utype> switch_statement
@@ -132,7 +129,12 @@ char ** instructions;
 %start start
 %%
 
-start: calc root;
+start: calc NEWLINE root save_position {
+  if (current_mode == PRGM){
+    emit("HALT");
+    complete($3.nextList, $4.intValue + 1);
+  }
+};
 
 calc: MODE {
   current_mode = $1.intValue;
@@ -147,11 +149,12 @@ calc: MODE {
   }
 };
 
-root: root statement | statement;
+root: root save_position statement{ 
+  $$ = $3; 
+  complete($1.nextList, $2.intValue + 1); 
+} | statement ;
 
-statement : check_mode program_statement save_position { 
-  complete($2.nextList, $3.intValue + 1);
-};
+statement : check_mode program_statement { $$ = $2; };
 
 statement : id ASSIGN general_expression NEWLINE{
   sym_enter($1.stringValue, &$3);
@@ -254,8 +257,6 @@ statement : general_expression NEWLINE {
   }
 };
 
-statement : NEWLINE {};
-
 check_mode : { 
   printf("BISON: Checking mode\n");
 
@@ -317,71 +318,57 @@ array : SQUARE_BRACKET_OPEN array_statement {
   $$.empty = false;
 };
 
-save_position : { $$.intValue = line_counter; }
+save_position : { 
+  $$.intValue = line_counter;
+}
+
+goto_exit : { 
+  emit("GOTO"); 
+  $$.nextList = create_line(line_counter);
+}
 
 program_statement : if_statement | while_statement | repeat_statement | for_statement | switch_statement;
 
-if_init : IF PARENTHESIS_OPEN condition PARENTHESIS_CLOSE THEN { 
-  $$.intValue = $3.intValue;
+if_statement : IF PARENTHESIS_OPEN condition PARENTHESIS_CLOSE THEN NEWLINE save_position root FI NEWLINE {
+  complete($3.trueList, $7.intValue + 1);
   $$.trueList = NULL;
-  $$.falseList = $3.falseList;
-  complete($3.trueList, line_counter + 1);
-};
-
-if_statement : if_init root save_position elsif_else_fi {
-  $$.nextList = merge($4.falseList, $4.nextList);
-  complete($1.trueList, $3.intValue);
-  complete($1.falseList, $4.intValue - 1);
-};
-
-elsif_init_emit : ELSIF { 
-  emit("GOTO"); 
-  $$.intValue = line_counter + 1; 
-  $$.trueList = NULL;
-  $$.falseList = create_line(line_counter); 
-};
-
-elsif_init : elsif_init_emit PARENTHESIS_OPEN condition PARENTHESIS_CLOSE THEN { 
-  $$.intValue = $3.intValue;
-  $$.trueList = NULL;
-  $$.falseList = $3.falseList;
-  $$.nextList = $1.falseList;
-  complete($3.trueList, line_counter + 1);
-};
-
-elsif_else_fi : elsif_init root save_position elsif_else_fi {
-  $$.trueList = NULL;
-  $$.falseList = $4.falseList; 
-  $$.nextList = merge($1.nextList, $4.nextList);//$1.falseList; //merge($1.falseList, $4.falseList);
-  complete($1.trueList, $3.intValue);
-  complete($1.falseList, $4.intValue - 1);
-};
-
-else_init : ELSE { 
-  emit("GOTO"); 
-  $$.intValue = line_counter + 2; 
-  $$.trueList = NULL; 
-  $$.falseList = create_line(line_counter);
-  $$.nextList = NULL;
-};
-
-elsif_else_fi : else_init root if_end { 
-  $$.intValue = $1.intValue;
-  $$.trueList = NULL; 
-  $$.falseList = merge($1.falseList, $3.falseList);
-  $$.nextList = NULL;
-};
-
-elsif_else_fi: if_end { $$ = $1; };
-
-if_end : FI { 
-  $$.intValue = line_counter + 2; 
-  $$.trueList = NULL; 
   $$.falseList = NULL;
-  $$.nextList = NULL;
+  $$.nextList = merge($3.falseList, $8.nextList);
 };
 
-switch_statement : SWITCH PARENTHESIS_OPEN switch_id PARENTHESIS_CLOSE DO NEWLINE switch_case DONE {
+if_statement : IF PARENTHESIS_OPEN condition PARENTHESIS_CLOSE THEN NEWLINE save_position root ELSE NEWLINE goto_exit save_position root FI NEWLINE{
+  complete($3.trueList, $7.intValue + 1);
+  complete($3.falseList, $12.intValue + 1);
+  $$.trueList = NULL;
+  $$.falseList = NULL;
+  $$.nextList = merge($11.nextList, merge($8.nextList, $13.nextList));
+};
+
+if_statement : IF PARENTHESIS_OPEN condition PARENTHESIS_CLOSE THEN NEWLINE save_position root elsif_recursion ELSE NEWLINE goto_exit root FI NEWLINE{
+  complete($3.trueList, $7.intValue + 1);
+  complete($3.falseList, $9.intValue);
+  $$.trueList = NULL;
+  $$.falseList = NULL;
+  $$.nextList = merge($12.nextList, merge($8.nextList, merge($9.nextList, $13.nextList)));
+};
+
+elsif_recursion : elsif_recursion elsif_statement {
+  $$.intValue =  $1.intValue;
+  $$.trueList = merge($1.trueList, $2.trueList);
+  $$.falseList = NULL;
+  $$.nextList = merge($1.nextList, $2.nextList);
+}| elsif_statement;
+
+elsif_statement : goto_exit ELSIF PARENTHESIS_OPEN condition PARENTHESIS_CLOSE THEN NEWLINE save_position root save_position{
+  $$.intValue = $8.intValue - 1;
+  complete($4.trueList, $8.intValue + 1);
+  complete($4.falseList, $10.intValue + 2);
+  $$.trueList = NULL;
+  $$.falseList = NULL;
+  $$.nextList = merge($1.nextList, $9.nextList);
+};
+
+switch_statement : SWITCH PARENTHESIS_OPEN switch_id PARENTHESIS_CLOSE DO NEWLINE switch_case DONE NEWLINE{
   $$ = $7;
 };
 
@@ -404,10 +391,10 @@ switch_condition : UTYPE {
   $$.intValue = line_counter;
 };
 
-switch_case : CASE switch_condition THEN save_position root BREAK NEWLINE switch_case_default {
-  complete($2.trueList, $4.intValue + 1);
-  complete($2.falseList, $8.intValue - 1);
-  $$.nextList = $8.nextList;
+switch_case : CASE switch_condition THEN NEWLINE save_position root BREAK NEWLINE switch_case_default {
+  complete($2.trueList, $5.intValue + 1);
+  complete($2.falseList, $9.intValue - 1);
+  $$.nextList = merge($6.nextList, $9.nextList);
 };
 
 switch_case_default_init : {
@@ -422,42 +409,44 @@ switch_case_default: switch_case_default_init switch_case {
   $$.nextList = merge($1.falseList, $2.nextList);
 };
 
-switch_case_default: switch_case_default_init DEFAULT THEN root BREAK NEWLINE { 
+switch_case_default: switch_case_default_init DEFAULT THEN NEWLINE root BREAK NEWLINE { 
   $$.nextList = $1.falseList;
 };
 
-while_statement: WHILE save_position PARENTHESIS_OPEN condition PARENTHESIS_CLOSE DO save_position iterative_body DONE{
-  complete($4.trueList, $7.intValue + 1);
-  complete($8.nextList, $2.intValue);
-  complete($8.trueList, $2.intValue + 1);
-  $$.nextList = $4.falseList;
+while_statement: WHILE save_position PARENTHESIS_OPEN condition PARENTHESIS_CLOSE DO NEWLINE save_position iterative_body DONE NEWLINE{
+  complete($4.trueList, $8.intValue + 1);
+  complete($9.nextList, $2.intValue + 1);
+  complete($9.trueList, $2.intValue + 1);
   emit("GOTO");
   complete(create_line(line_counter), $2.intValue + 1);
+  $$.trueList = NULL;
+  $$.falseList = NULL;
+  $$.nextList = merge($4.falseList, $9.falseList);
 };
 
-repeat_statement: REPEAT save_position iterative_body UNTIL PARENTHESIS_OPEN condition PARENTHESIS_CLOSE{
-  complete($6.trueList, $2.intValue + 1);
-  complete($3.trueList, $2.intValue + 1);
-  $$.nextList = $6.falseList;
+repeat_statement: REPEAT NEWLINE save_position iterative_body UNTIL PARENTHESIS_OPEN save_position condition PARENTHESIS_CLOSE NEWLINE{
+  complete($8.trueList, $3.intValue + 1);
+  complete($4.nextList, $7.intValue + 1);
+  complete($4.trueList, $3.intValue + 1);
+  $$.trueList = NULL;
+  $$.falseList = NULL;
+  $$.nextList = merge($4.falseList, merge($8.falseList, $4.nextList));
 }
 
-for_statement: for_init save_position iterative_body DONE {
+for_statement: for_init save_position iterative_body DONE NEWLINE {
   complete($1.trueList, $2.intValue + 1);
   complete($3.trueList, $2.intValue - 1);
 
   char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
-  char * temp_variable = (char*) malloc(5 * sizeof(char));
-  create_variable(&temp_variable);
-
-  sprintf(instruction, "%s := %s ADDI %s", temp_variable, $1.name, "1");
-  emit(instruction);
-
-  sprintf(instruction, "%s := %s", $1.name, temp_variable);
+  sprintf(instruction, "%s := %s ADDI %s", $1.name, $1.name, "1");
   emit(instruction);
 
   emit("GOTO");
   complete(create_line(line_counter), $1.intValue);
-  $$.nextList = $1.falseList;
+  $$.trueList = NULL;
+  $$.falseList = NULL;
+  complete($3.nextList, line_counter - 1);
+  $$.nextList = merge($1.falseList, $3.falseList);
 }
 
 for_id : ID {
@@ -467,25 +456,19 @@ for_id : ID {
   $$.name = $1.stringValue;
 }
 
-for_init: FOR save_position PARENTHESIS_OPEN for_id IN expression RANGE expression PARENTHESIS_CLOSE DO {
-  if (($6.type != BINT && $6.type != BFLOAT) || ($8.type != BINT && $8.type != BFLOAT))
+for_init: FOR PARENTHESIS_OPEN for_id IN expression RANGE expression PARENTHESIS_CLOSE DO NEWLINE {
+  if (($5.type != BINT && $5.type != BFLOAT) || ($7.type != BINT && $7.type != BFLOAT))
     yyerror("Values in range must be integers\n");
   
   char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
-  sprintf(instruction, "%s := %s", $4.name, $6.name);
+  sprintf(instruction, "%s := %s", $3.name, $5.name);
   emit(instruction);
 
   strcpy(instruction, "IF ");
-  strcat(instruction, $4.name);
-  strcat(instruction, " LT");
+  strcat(instruction, $3.name);
+  strcat(instruction, " LEI ");
 
-  if($6.type == BINT && $8.type == BINT){
-    strcat(instruction, "I ");
-  }else if($6.type == BFLOAT || $8.type == BFLOAT){
-    strcat(instruction, "F ");
-  }
-
-  strcat(instruction, $8.name);
+  strcat(instruction, $7.name);
   strcat(instruction, " GOTO");
   
   emit(instruction);
@@ -493,7 +476,7 @@ for_init: FOR save_position PARENTHESIS_OPEN for_id IN expression RANGE expressi
   emit("GOTO");
   $$.falseList = create_line(line_counter);
   $$.intValue = line_counter - 1;
-  $$.name = $4.name;
+  $$.name = $3.name;
 };
 
 condition : boolean_expression {
@@ -502,41 +485,54 @@ condition : boolean_expression {
     yyerror("Expression result must be boolean");
 }
 
-iterative_body : iterative_body iterative_statement  { $$.trueList = merge($1.trueList, $2.trueList);$$.falseList = merge($1.falseList, $2.falseList);$$.nextList = merge($1.nextList, $2.nextList); }| iterative_statement { $$=$1; };
+iterative_body: iterative_body save_position iterative_statement { 
+  complete($1.nextList, $2.intValue + 1);
+  $$.trueList = merge($1.trueList, $3.trueList);
+  $$.falseList = merge($1.falseList, $3.falseList);
+  $$.nextList = $3.nextList;
+} | iterative_statement;
 
-iterative_statement : CONTINUE {
+
+iterative_statement : CONTINUE NEWLINE {
   emit("GOTO"); 
   $$.trueList = create_line(line_counter);
   $$.falseList = NULL;
   $$.nextList = NULL;
 };
 
-iterative_statement : statement  { $$=$1; };
+iterative_statement : BREAK NEWLINE {
+  emit("GOTO"); 
+  $$.trueList = NULL;
+  $$.falseList = create_line(line_counter);
+  $$.nextList = NULL;
+};
+
+iterative_statement : statement;
 
 expression: FUNC_SQRT PARENTHESIS_OPEN expression PARENTHESIS_CLOSE {
   printf("BISON: Performing sqrt function\n");
-  if (current_mode == CALC){
-    if (sqrt_function(&$$, $3) == OP_FAILED){
-      yyerror("BISON: bad sqrt function\n");
-    }
-  } else if ($3.type == BINT || $3.type == BFLOAT) {
-    $$.type = BFLOAT;
-  } else {
+  op_status status = OP_FAILED;
+
+  if (current_mode == CALC)
+    status = sqrt_function(&$$, $3);
+  else if (current_mode == PRGM)
+    status = sqrt_function_c3a(&$$, &$3);
+  
+  if (status == OP_FAILED)
     yyerror("BISON: bad sqrt function\n");
-  }
 };
 
 expression: FUNC_LOG PARENTHESIS_OPEN expression PARENTHESIS_CLOSE {
   printf("BISON: Performing log function\n");
-  if (current_mode == CALC){
-    if (log_function(&$$, $3) == OP_FAILED){
-      yyerror("BISON: bad log function\n");
-    }
-  } else if ($3.type == BINT || $3.type == BFLOAT) {
-    $$.type = BFLOAT;
-  } else {
+  op_status status = OP_FAILED;
+
+  if (current_mode == CALC)
+    status = log_function(&$$, $3);
+  else if (current_mode == PRGM)
+    status = log_function_c3a(&$$, &$3);
+  
+  if (status == OP_FAILED)
     yyerror("BISON: bad log function\n");
-  }
 };
 
 expression: PARENTHESIS_OPEN expression PARENTHESIS_CLOSE {
@@ -663,25 +659,25 @@ boolean_expression: NOT boolean_expression {
     yyerror("BISON: bad not operation\n");
 };
 
-boolean_expression: boolean_expression AND boolean_expression {
+boolean_expression: boolean_expression AND save_position boolean_expression {
   op_status status = OP_FAILED;
 
   if (current_mode == CALC)
-    status = and_operation(&$$, $1, $3);
+    status = and_operation(&$$, $1, $4);
   else if (current_mode == PRGM)
-    status = and_operation_c3a(&$$, &$1, &$3);
+    status = and_operation_c3a(&$$, &$1, &$4, &$3);
   
   if (status == OP_FAILED)
     yyerror("BISON: bad and operation\n");
 };
 
-boolean_expression: boolean_expression OR boolean_expression {
+boolean_expression: boolean_expression OR save_position boolean_expression {
   op_status status = OP_FAILED;
 
   if (current_mode == CALC)
-    status = or_operation(&$$, $1, $3);
+    status = or_operation(&$$, $1, $4);
   else if (current_mode == PRGM)
-    status = or_operation_c3a(&$$, &$1, &$3);
+    status = or_operation_c3a(&$$, &$1, &$4, &$3);
   
   if (status == OP_FAILED)
     yyerror("BISON: bad or operation\n");
@@ -737,12 +733,9 @@ int analisi_semantic(){
 }
 
 int end_analisi_sintactic(){
-  if (current_mode == PRGM){
-    emit("HALT");
-
+  if (current_mode == PRGM)
     for (int i = 0; i < line_counter; i++)
       fprintf(yyout, "%s\n", instructions[i]);
-  }
   
   int error = fclose(yyout);
 

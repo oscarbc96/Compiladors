@@ -1,0 +1,9 @@
+calc off
+
+x:=3
+
+if (3<x or 4=x and not(3>x or x=x)) then
+  x
+else
+  x := 1
+fi

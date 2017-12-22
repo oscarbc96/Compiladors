@@ -104,10 +104,12 @@ id [a-zA-Z]+[a-zA-Z0-9]*
 int [0-9]+
 float {int}\.{int}
 string (?:[^\"\\\n]|\\.)*
-oneline_comment \/\/.*
-space [ \t\r]*
+oneline_comment \/\/.*\n
+spaces [ \t\r]*
  
 %%
+
+^{spaces}\n
 
 "calc"                              if(yylineno == 1) BEGIN(CALCMODE); else RETURN(ID);
 <CALCMODE>"on"                      RETURN_MODE(CALC);
@@ -167,15 +169,16 @@ space [ \t\r]*
 "\""                                BEGIN(STRING);
 <STRING>{string}                    RETURN_UTYPE(BSTRING);
 <STRING>"\""                        BEGIN(INITIAL);
-"\n"                                RETURN(NEWLINE); 
+"\n"                                RETURN(NEWLINE);
 \/\*                                printf("FLEX: MULTILINE COMMENT BEGIN -> "); BEGIN(COMMENT);
-<COMMENT>\*\/                       printf("FLEX: MULTILINE COMMENT END -> "); BEGIN(INITIAL);
+<COMMENT>\*\/\n                       printf("FLEX: MULTILINE COMMENT END -> "); BEGIN(INITIAL);
 <COMMENT>\n
 <COMMENT>.
 <COMMENT><<EOF>>                    ERROR("unterminated comment"); 
 {oneline_comment}                   printf("FLEX: COMMENT -> ");
-{space}
-.                                   ERROR("unknown character"); 
+{spaces}
+.                                   ERROR("unknown character");
+<<EOF>>                             yyterminate();
 
 %%
 

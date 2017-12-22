@@ -1,0 +1,24 @@
+FLEX: Detected mode PRGM
+BISON: Starting in mode PRGM
+FLEX: ASSIGN yytex: :=
+FLEX: INT yytex: 5 -> 5
+FLEX: REPEAT yytex: repeat
+BISON: Checking mode
+FLEX: INT yytex: 123 -> 123
+FLEX: BREAK yytex: break
+FLEX: INT yytex: 123 -> 123
+FLEX: INT yytex: 123 -> 123
+FLEX: ID yytex: a -> a
+FLEX: ASSIGN yytex: :=
+FLEX: ID yytex: a -> a
+FLEX: ADD yytex: +
+BISON: Looking for ID a
+FLEX: INT yytex: 1 -> 1
+FLEX: UNTIL yytex: until
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: ID yytex: a -> a
+BISON: Looking for ID a
+FLEX: COMP yytex: < -> <
+FLEX: INT yytex: 7 -> 7
+FLEX: PARENTHESIS_CLOSE yytex: )
+The compilation has been successful

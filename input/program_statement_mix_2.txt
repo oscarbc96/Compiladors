@@ -1,0 +1,18 @@
+calc off
+
+total := 0.0
+if (total < 10) then
+  3+1
+elsif (total > 10) then
+  3-1
+  if (total = 19) then
+    while(total > 56) do
+      if (total = 20) then
+        133
+      fi
+    done
+  fi
+  4
+else
+  3*1
+fi

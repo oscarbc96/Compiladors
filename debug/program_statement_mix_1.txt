@@ -1,0 +1,67 @@
+FLEX: Detected mode PRGM
+BISON: Starting in mode PRGM
+FLEX: ASSIGN yytex: :=
+FLEX: INT yytex: 2 -> 2
+FLEX: WHILE yytex: while
+BISON: Checking mode
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: ID yytex: b -> b
+BISON: Looking for ID b
+FLEX: COMP yytex: = -> =
+FLEX: ID yytex: b -> b
+BISON: Looking for ID b
+FLEX: PARENTHESIS_CLOSE yytex: )
+FLEX: DO yytex: do
+FLEX: FOR yytex: for
+BISON: Checking mode
+FLEX: PARENTHESIS_OPEN yytex: (
+BISON: Looking for ID a
+FLEX: IN yytex: in
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: ID yytex: b -> b
+BISON: Looking for ID b
+FLEX: DIVIDE yytex: /
+FLEX: INT yytex: 2 -> 2
+FLEX: PARENTHESIS_CLOSE yytex: )
+FLEX: RANGE yytex: ..
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: INT yytex: 4 -> 4
+FLEX: ADD yytex: +
+FLEX: ID yytex: b -> b
+BISON: Looking for ID b
+FLEX: MULTIPLY yytex: *
+FLEX: ID yytex: b -> b
+BISON: Looking for ID b
+FLEX: PARENTHESIS_CLOSE yytex: )
+FLEX: PARENTHESIS_CLOSE yytex: )
+FLEX: DO yytex: do
+FLEX: INT yytex: 123 -> 123
+FLEX: INT yytex: 124 -> 124
+FLEX: BREAK yytex: break
+FLEX: INT yytex: 125 -> 125
+FLEX: INT yytex: 126 -> 126
+FLEX: CONTINUE yytex: continue
+FLEX: INT yytex: 127 -> 127
+FLEX: INT yytex: 128 -> 128
+FLEX: IF yytex: if
+BISON: Checking mode
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: ID yytex: b -> b
+BISON: Looking for ID b
+FLEX: COMP yytex: <> -> <>
+FLEX: ID yytex: b -> b
+BISON: Looking for ID b
+FLEX: PARENTHESIS_CLOSE yytex: )
+FLEX: THEN yytex: then
+FLEX: INT yytex: 129 -> 129
+FLEX: FI yytex: fi
+FLEX: INT yytex: 130 -> 130
+FLEX: DONE yytex: done
+FLEX: INT yytex: 131 -> 131
+FLEX: CONTINUE yytex: continue
+FLEX: INT yytex: 132 -> 132
+FLEX: BREAK yytex: break
+FLEX: INT yytex: 133 -> 133
+FLEX: DONE yytex: done
+FLEX: INT yytex: 134 -> 134
+The compilation has been successful

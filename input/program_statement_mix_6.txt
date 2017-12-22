@@ -1,0 +1,24 @@
+calc off
+
+a := 3
+
+switch (a) do
+  case 3 then
+    123
+    124
+    125
+    break
+  case 4 then
+    126
+    127
+    128
+    if (a = 4) then
+      129
+    fi
+    break
+  default then
+    130
+    131
+    132
+    break
+done

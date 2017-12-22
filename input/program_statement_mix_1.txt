@@ -1,0 +1,26 @@
+calc off
+
+b := 2
+
+while (b=b) do
+  for (a in (b/2)..(4+b*b)) do
+    123
+    124
+    break
+    125
+    126
+    continue
+    127
+    128
+    if (b <> b) then
+      129
+    fi
+    130
+  done
+  131
+  continue
+  132
+  break
+  133
+done
+134

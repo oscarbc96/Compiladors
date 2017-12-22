@@ -2,7 +2,7 @@ FLEX: Detected mode PRGM
 BISON: Starting in mode PRGM
 FLEX: ASSIGN yytex: :=
 FLEX: INT yytex: 2 -> 2
-FLEX: COMMENT -> FLEX: FOR yytex: for
+FLEX: FOR yytex: for
 BISON: Checking mode
 FLEX: PARENTHESIS_OPEN yytex: (
 BISON: Looking for ID a
@@ -14,6 +14,7 @@ FLEX: INT yytex: 4 -> 4
 FLEX: PARENTHESIS_CLOSE yytex: )
 FLEX: DO yytex: do
 FLEX: INT yytex: 123 -> 123
+FLEX: BREAK yytex: break
 FLEX: INT yytex: 123 -> 123
 FLEX: INT yytex: 123 -> 123
 FLEX: DONE yytex: done

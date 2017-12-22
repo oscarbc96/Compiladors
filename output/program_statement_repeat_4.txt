@@ -1,0 +1,18 @@
+1: $t01 := 1
+2: i := $t01
+3: $t02 := 3 ADDI 2
+4: $t03 := 3 MULI 4
+5: $t04 := $t03 MULI 2
+6: $t05 := $t02 ADDI $t04
+7: $t06 := $t05 SUBI 2
+8: $t07 := 1 DIVI 3
+9: $t08 := $t06 ADDI $t07
+10: PARAM $t08
+11: CALL PUTI,1
+12: IF i LTI 3 GOTO 14
+13: GOTO 18
+14: IF i GTI 1 GOTO 3
+15: GOTO 16
+16: IF i EQ 0 GOTO 3
+17: GOTO 18
+18: HALT
