@@ -48,18 +48,38 @@ void complete(line *lines, int position) {
     sprintf(instruction_complete, "%s %d", instruction, position);
     instructions[line->line_number - 1] = instruction_complete;
     line = line->next;
+    free(instruction);
   }
 }
 
 /* math operations */
-op_status add_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
-  char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
-  create_variable(&result->name);
+void convert_to_float(uniontype *op) {
+  char * temp_var;
+  create_variable(&temp_var);
 
-  if(op1->type == BINT && op2->type == BINT){
+  char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
+  sprintf(instruction, "%s := I2F %s", temp_var, op->name);
+  emit(instruction);
+  free(instruction);
+  
+  op->name = temp_var;
+  op->type = BFLOAT;
+}
+
+op_status add_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2) {
+  char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
+
+  if (op1->type == BINT && op2->type == BINT) {
     result->type = BINT;
+    create_variable(&result->name);
     sprintf(instruction, "%s := %s ADDI %s", result->name, op1->name, op2->name);
-  }else if(op1->type == BFLOAT || op2->type == BFLOAT){
+  } else if (op1->type == BFLOAT || op2->type == BFLOAT) {
+    if (op1->type == BINT)
+      convert_to_float(op1);
+    else if (op2->type == BINT)
+      convert_to_float(op2);
+
+    create_variable(&result->name);
     result->type = BFLOAT;
     sprintf(instruction, "%s := %s ADDF %s", result->name, op1->name, op2->name);
   }else{
@@ -67,18 +87,25 @@ op_status add_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
   }
 
   emit(instruction);
+  free(instruction);
   
   return OP_SUCCESS;
 }
 
-op_status substract_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
+op_status substract_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2) {
   char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
-  create_variable(&result->name);
 
-  if(op1->type == BINT && op2->type == BINT){
+  if (op1->type == BINT && op2->type == BINT) {
     result->type = BINT;
+    create_variable(&result->name);
     sprintf(instruction, "%s := %s SUBI %s", result->name, op1->name, op2->name);
-  }else if(op1->type == BFLOAT || op2->type == BFLOAT){
+  } else if (op1->type == BFLOAT || op2->type == BFLOAT) {
+    if (op1->type == BINT)
+      convert_to_float(op1);
+    else if (op2->type == BINT)
+      convert_to_float(op2);
+
+    create_variable(&result->name);
     result->type = BFLOAT;
     sprintf(instruction, "%s := %s SUBF %s", result->name, op1->name, op2->name);
   } else {
@@ -86,11 +113,12 @@ op_status substract_operation_c3a(uniontype *result, uniontype *op1, uniontype *
   }
 
   emit(instruction);
+  free(instruction);
 
   return OP_SUCCESS;
 }
 
-op_status pow_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
+op_status pow_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2) {
   if ((op1->type != BINT && op1->type != BFLOAT) || (op2->type != BINT && op2->type != BFLOAT))
     return OP_FAILED;
 
@@ -105,18 +133,25 @@ op_status pow_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
 
   sprintf(instruction, "%s := CALL POW,2", result->name);
   emit(instruction);
+  free(instruction);
   
   return OP_SUCCESS;
 }
 
-op_status multiply_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
+op_status multiply_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2) {
   char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
-  create_variable(&result->name);
 
-  if(op1->type == BINT && op2->type == BINT){
+  if (op1->type == BINT && op2->type == BINT) {
     result->type = BINT;
+    create_variable(&result->name);
     sprintf(instruction, "%s := %s MULI %s", result->name, op1->name, op2->name);
-  }else if(op1->type == BFLOAT || op2->type == BFLOAT){
+  } else if (op1->type == BFLOAT || op2->type == BFLOAT) {
+    if (op1->type == BINT)
+      convert_to_float(op1);
+    else if (op2->type == BINT)
+      convert_to_float(op2);
+
+    create_variable(&result->name);
     result->type = BFLOAT;
     sprintf(instruction, "%s := %s MULF %s", result->name, op1->name, op2->name);
   }else{
@@ -124,23 +159,28 @@ op_status multiply_operation_c3a(uniontype *result, uniontype *op1, uniontype *o
   }
 
   emit(instruction);
+  free(instruction);
 
   return OP_SUCCESS;
 }
 
-op_status divide_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
+op_status divide_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2) {
   char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
-  create_variable(&result->name);
 
-  if((op2->type == BINT && op2->intValue == 0) || (op2->type == BFLOAT && op2->floatValue == 0.0))
+  if ((op2->type == BINT && op2->intValue == 0) || (op2->type == BFLOAT && op2->floatValue == 0.0))
     return OP_FAILED;
 
-  if(op1->type == BINT && op2->type == BINT){
-    result->intValue = op1->intValue / op2->intValue;
+  if (op1->type == BINT && op2->type == BINT) {
     result->type = BINT;
-
+    create_variable(&result->name);
     sprintf(instruction, "%s := %s DIVI %s", result->name, op1->name, op2->name);
-  }else if(op1->type == BFLOAT || op2->type == BFLOAT){
+  } else if (op1->type == BFLOAT || op2->type == BFLOAT) {
+    if (op1->type == BINT)
+      convert_to_float(op1);
+    else if (op2->type == BINT)
+      convert_to_float(op2);
+
+    create_variable(&result->name);
     result->type = BFLOAT;
     sprintf(instruction, "%s := %s DIVF %s", result->name, op1->name, op2->name);
   } else {
@@ -148,18 +188,24 @@ op_status divide_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2
   }
 
   emit(instruction);
+  free(instruction);
 
   return OP_SUCCESS;
 }
 
-op_status mod_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
+op_status mod_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2) {
   char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
-  create_variable(&result->name);
 
-  if(op1->type == BINT && op2->type == BINT){
+  if (op1->type == BINT && op2->type == BINT) {
     result->type = BINT;
+    create_variable(&result->name);
     sprintf(instruction, "%s := %s MODI %s", result->name, op1->name, op2->name);
-  }else if(op1->type == BFLOAT || op2->type == BFLOAT){
+  } else if (op1->type == BFLOAT || op2->type == BFLOAT) {
+    if (op1->type == BINT)
+      convert_to_float(op1);
+    else if (op2->type == BINT)
+      convert_to_float(op2);
+    create_variable(&result->name);
     result->type = BFLOAT;
     sprintf(instruction, "%s := %s MODF %s", result->name, op1->name, op2->name);
   }else{
@@ -167,25 +213,27 @@ op_status mod_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2){
   }
 
   emit(instruction);
+  free(instruction);
 
   return OP_SUCCESS;
 }
 
-op_status negate_operation_c3a(uniontype *result, uniontype *op){
+op_status negate_operation_c3a(uniontype *result, uniontype *op) {
   char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
   create_variable(&result->name);
 
   result->type = op->type;
-  if(op->type == BINT)
+  if (op->type == BINT)
     sprintf(instruction, "%s := CHSI %s", result->name, op->name);
   else
     sprintf(instruction, "%s := CHSF %s", result->name, op->name);
 
   emit(instruction);
+  free(instruction);
 };
 
 /* boolean operations */
-op_status compare_operation_c3a(uniontype *result, uniontype *op1, char *comp, uniontype *op2){
+op_status compare_operation_c3a(uniontype *result, uniontype *op1, char *comp, uniontype *op2) {
   result->type = BBOOL;
 
   char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
@@ -206,15 +254,17 @@ op_status compare_operation_c3a(uniontype *result, uniontype *op1, char *comp, u
     strcat(instruction, " NE ");
 
   bool add_symbol = (strcmp(comp, "=") != 0 && strcmp(comp, "<>") != 0);
-  if(add_symbol && op1->type == BINT && op2->type == BINT)
+  if (add_symbol && op1->type == BINT && op2->type == BINT)
     strcat(instruction, "I ");
-  else if(add_symbol && (op1->type == BFLOAT || op2->type == BFLOAT))
+  else if (add_symbol && (op1->type == BFLOAT || op2->type == BFLOAT))
     strcat(instruction, "F ");
 
   strcat(instruction, op2->name);
   strcat(instruction, " GOTO");
   
   emit(instruction);
+  free(instruction);
+
   result->trueList = create_line(line_counter);
 
   emit("GOTO");
@@ -224,8 +274,8 @@ op_status compare_operation_c3a(uniontype *result, uniontype *op1, char *comp, u
   return OP_SUCCESS;
 }
 
-op_status not_operation_c3a(uniontype *result, uniontype *op){
-  if(op->type == BBOOL){
+op_status not_operation_c3a(uniontype *result, uniontype *op) {
+  if (op->type == BBOOL) {
     result->type = BBOOL;
     result->trueList = op->falseList;
     result->falseList = op->trueList;
@@ -237,8 +287,8 @@ op_status not_operation_c3a(uniontype *result, uniontype *op){
   return OP_SUCCESS;
 }
 
-op_status and_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2, uniontype *m){
-  if(op1->type == BBOOL && op2->type == BBOOL){
+op_status and_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2, uniontype *m) {
+  if (op1->type == BBOOL && op2->type == BBOOL) {
     result->type = BBOOL;
     result->intValue = op1->intValue;
     result->trueList = op2->trueList;
@@ -252,8 +302,8 @@ op_status and_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2, u
   return OP_SUCCESS;
 }
 
-op_status or_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2, uniontype *m){
-  if(op1->type == BBOOL && op2->type == BBOOL){
+op_status or_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2, uniontype *m) {
+  if (op1->type == BBOOL && op2->type == BBOOL) {
     result->type = BBOOL;
     result->trueList = merge(op1->trueList, op2->trueList);
     result->falseList = op2->falseList;
@@ -267,7 +317,7 @@ op_status or_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2, un
 
 /* functions */
 
-op_status sqrt_function_c3a(uniontype *result, uniontype *op){
+op_status sqrt_function_c3a(uniontype *result, uniontype *op) {
   if (op->type != BINT && op->type != BFLOAT)
     return OP_FAILED;
 
@@ -279,11 +329,12 @@ op_status sqrt_function_c3a(uniontype *result, uniontype *op){
 
   sprintf(instruction, "%s := CALL SQRT,1", result->name);
   emit(instruction);
+  free(instruction);
   
   return OP_SUCCESS;
 }
 
-op_status log_function_c3a(uniontype *result, uniontype *op){
+op_status log_function_c3a(uniontype *result, uniontype *op) {
   if (op->type != BINT && op->type != BFLOAT)
     return OP_FAILED;
 
@@ -295,6 +346,7 @@ op_status log_function_c3a(uniontype *result, uniontype *op){
 
   sprintf(instruction, "%s := CALL LOG,1", result->name);
   emit(instruction);
+  free(instruction);
   
   return OP_SUCCESS;
 }

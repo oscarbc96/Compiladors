@@ -26,7 +26,7 @@ clean :
 	rm -f *~ $(BIN) $(OBJ) $(SRCL) $(SRCY) $(OTHERS) ./output/* ./debug/*
 
 test : clean all
-	for filename in ./input/program_statement_*.txt; do \
+	for filename in ./input/*.txt; do \
 		file=$$(basename $$filename); \
 		echo "Running "$$filename; \
     ./$(BIN) ./input/$$file ./output/$$file &> ./debug/$$file; \

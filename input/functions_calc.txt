@@ -1,0 +1,5 @@
+calc on 
+sqrt(10)
+sqrt(10.0)
+log(10)
+log(10.0)

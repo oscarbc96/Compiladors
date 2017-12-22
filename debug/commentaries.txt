@@ -1,0 +1,5 @@
+FLEX: Detected mode CALC
+BISON ERROR: Program statements not allowed in PRGM mode.
+, in line 8 
+BISON: Starting in mode CALC
+FLEX: COMMENT -> FLEX: MULTILINE COMMENT BEGIN -> FLEX: MULTILINE COMMENT END -> BISON: Checking mode

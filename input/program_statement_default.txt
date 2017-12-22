@@ -2,7 +2,7 @@ calc off
 
 // nested sentences 
 total := 0.0
-i := 1
+i := 1.0
 while (total < 1000.0) do
   if (i = 1) then
     total := total * 2

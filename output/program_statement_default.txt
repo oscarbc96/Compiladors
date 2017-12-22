@@ -1,25 +1,27 @@
 1: $t01 := 0.000000
 2: total := $t01
-3: $t02 := 1
+3: $t02 := 1.000000
 4: i := $t02
 5: IF total LTF 1000.000000 GOTO 7
-6: GOTO 23
+6: GOTO 25
 7: IF i EQ 1 GOTO 9
-8: GOTO 12
-9: $t03 := total MULF 2
-10: total := $t03
-11: GOTO 14
-12: $t04 := total SUBF 1
-13: total := $t04
-14: $t05 := CHSI i
-15: i := $t05
-16: IF total GTF 666.600000 GOTO 20
-17: GOTO 18
-18: IF total EQ 500.000000 GOTO 20
-19: GOTO 5
-20: $t06 := 1
-21: i := $t06
-22: GOTO 5
-23: PARAM total
-24: CALL PUTF,1
-25: HALT
+8: GOTO 13
+9: $t03 := I2F 2
+10: $t04 := total MULF $t03
+11: total := $t04
+12: GOTO 16
+13: $t05 := I2F 1
+14: $t06 := total SUBF $t05
+15: total := $t06
+16: $t07 := CHSF i
+17: i := $t07
+18: IF total GTF 666.600000 GOTO 22
+19: GOTO 20
+20: IF total EQ 500.000000 GOTO 22
+21: GOTO 5
+22: $t08 := 1
+23: i := $t08
+24: GOTO 5
+25: PARAM total
+26: CALL PUTF,1
+27: HALT

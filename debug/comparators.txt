@@ -1,0 +1,53 @@
+FLEX: Detected mode CALC
+BISON: Starting in mode CALC
+FLEX: FLOAT yytex: 3.5 -> 3.500000
+FLEX: COMP yytex: > -> >
+FLEX: INT yytex: 2 -> 2
+BISON: Performing comparation operation
+BISON: EXPRESSION: TYPE: BOOL VALUE: true
+FLEX: INT yytex: 3 -> 3
+FLEX: COMP yytex: < -> <
+FLEX: INT yytex: 2 -> 2
+BISON: Performing comparation operation
+BISON: EXPRESSION: TYPE: BOOL VALUE: false
+FLEX: INT yytex: 8 -> 8
+FLEX: COMP yytex: >= -> >=
+FLEX: INT yytex: 7 -> 7
+BISON: Performing comparation operation
+BISON: EXPRESSION: TYPE: BOOL VALUE: true
+FLEX: INT yytex: 3 -> 3
+FLEX: COMP yytex: <= -> <=
+FLEX: INT yytex: 4 -> 4
+BISON: Performing comparation operation
+BISON: EXPRESSION: TYPE: BOOL VALUE: true
+FLEX: INT yytex: 10 -> 10
+FLEX: COMP yytex: = -> =
+FLEX: FLOAT yytex: 10.0 -> 10.000000
+BISON: Performing comparation operation
+BISON: EXPRESSION: TYPE: BOOL VALUE: true
+FLEX: INT yytex: 9 -> 9
+FLEX: COMP yytex: <> -> <>
+FLEX: INT yytex: 9 -> 9
+BISON: Performing comparation operation
+BISON: EXPRESSION: TYPE: BOOL VALUE: true
+FLEX: FLOAT yytex: 3.2 -> 3.200000
+FLEX: COMP yytex: = -> =
+FLEX: FLOAT yytex: 3.2 -> 3.200000
+BISON: Performing comparation operation
+BISON: EXPRESSION: TYPE: BOOL VALUE: true
+FLEX: STRING yytex: test -> test
+FLEX: COMP yytex: = -> =
+FLEX: STRING yytex: test -> test
+BISON: Performing comparation operation
+BISON: EXPRESSION: TYPE: BOOL VALUE: true
+FLEX: STRING yytex: test -> test
+FLEX: COMP yytex: = -> =
+FLEX: STRING yytex: test1 -> test1
+BISON: Performing comparation operation
+BISON: EXPRESSION: TYPE: BOOL VALUE: false
+FLEX: STRING yytex: test1 -> test1
+FLEX: COMP yytex: = -> =
+FLEX: STRING yytex: test -> test
+BISON: Performing comparation operation
+BISON: EXPRESSION: TYPE: BOOL VALUE: false
+The compilation has been successful

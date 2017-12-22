@@ -1,16 +1,21 @@
-# Compiladors - Practica 2
+# Compiladors - Practica 3
 
 Practica de compiladors. Desenvolupada sota l'entorn proporcionat per docker. 
 Com a funcionalitat extres s'ha afegit:
-- switch instruction
+
+- switch instruction (tambe en c3a)
 - array list
-- continue instruction
+- continue instruction (tambe en c3a)
+- break instruction (tambe en c3a)
+
+S'ha afegit un script python que compara la sortida amb la sortida esperada, destacant les diferencies.
 
 **Requeriments**
- -  gcc 
+ - gcc 
  - flex 
  - bison 
  - make 
+ - python3
  
 **Docker**
 ```sh

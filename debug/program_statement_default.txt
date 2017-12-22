@@ -3,7 +3,7 @@ BISON: Starting in mode PRGM
 FLEX: COMMENT -> FLEX: ASSIGN yytex: :=
 FLEX: FLOAT yytex: 0.0 -> 0.000000
 FLEX: ASSIGN yytex: :=
-FLEX: INT yytex: 1 -> 1
+FLEX: FLOAT yytex: 1.0 -> 1.000000
 FLEX: WHILE yytex: while
 BISON: Checking mode
 FLEX: PARENTHESIS_OPEN yytex: (

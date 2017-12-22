@@ -200,6 +200,8 @@ statement : id ASSIGN general_expression NEWLINE{
       }
 
       emit(instruction);
+
+      free(instruction);
     } else {
       printf("BISON: ASSIGN ID: %s TYPE: ARRAY\n", $1.stringValue);
       fprintf(yyout, "ASSIGN ID: %s TYPE: ARRAY\n", $1.stringValue);
@@ -250,6 +252,8 @@ statement : general_expression NEWLINE {
           break;
       }
       emit(instruction);
+
+      free(instruction);
     } else {
       printf("BISON: EXPRESSION TYPE: ARRAY\n");
       fprintf(yyout, "EXPRESSION TYPE: ARRAY\n");
@@ -387,6 +391,7 @@ switch_condition : UTYPE {
   $$.trueList = create_line(line_counter);
   sprintf(instruction, "GOTO");
   emit(instruction);
+  free(instruction);
   $$.falseList = create_line(line_counter);
   $$.intValue = line_counter;
 };
@@ -440,6 +445,7 @@ for_statement: for_init save_position iterative_body DONE NEWLINE {
   char * instruction = (char*) malloc(INSTRUCCION_LENGTH * sizeof(char));
   sprintf(instruction, "%s := %s ADDI %s", $1.name, $1.name, "1");
   emit(instruction);
+  free(instruction);
 
   emit("GOTO");
   complete(create_line(line_counter), $1.intValue);
@@ -472,6 +478,7 @@ for_init: FOR PARENTHESIS_OPEN for_id IN expression RANGE expression PARENTHESIS
   strcat(instruction, " GOTO");
   
   emit(instruction);
+  free(instruction);
   $$.trueList = create_line(line_counter);
   emit("GOTO");
   $$.falseList = create_line(line_counter);

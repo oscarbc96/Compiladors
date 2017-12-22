@@ -1,4 +1,4 @@
-calc off
+calc on
 
 x:=0
 x:=x+1

@@ -23,6 +23,7 @@ op_status emit(char *instruction);
 void complete(line *lines, int position);
 
 /* math operations */
+void convert_to_float(uniontype *op);
 op_status add_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2);
 op_status substract_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2);
 op_status pow_operation_c3a(uniontype *result, uniontype *op1, uniontype *op2);

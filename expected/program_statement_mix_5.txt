@@ -5,15 +5,15 @@
 5: $t04 := total ADDI $t03
 6: x := $t02
 7: IF x LEI $t04 GOTO 9
-8: GOTO 41
+8: GOTO 42
 9: $t05 := 1
 10: total := $t05
 11: IF total LTI 10 GOTO 17
 12: GOTO 13
 13: IF total EQ 5 GOTO 15
-14: GOTO 30
+14: GOTO 31
 15: IF total EQ total GOTO 17
-16: GOTO 30
+16: GOTO 31
 17: $t06 := 3 MULI 2
 18: x := $t06
 19: $t07 := x DIVI 2
@@ -24,18 +24,19 @@
 24: $t10 := CALL POW,2
 25: $t11 := $t09 SUBI $t10
 26: y := $t11
-27: $t12 := x ADDF 2.300000
-28: z := $t12
-29: GOTO 39
-30: IF x GTI 3 GOTO 32
-31: GOTO 36
-32: $t13 := x SUBI 3
-33: PARAM $t13
-34: CALL PUTI,1
-35: GOTO 39
-36: $t14 := 4 ADDI 2
-37: PARAM $t14
-38: CALL PUTI,1
-39: x := x ADDI 1
-40: GOTO 7
-41: HALT
+27: $t12 := I2F x
+28: $t13 := $t12 ADDF 2.300000
+29: z := $t13
+30: GOTO 40
+31: IF x GTI 3 GOTO 33
+32: GOTO 37
+33: $t14 := x SUBI 3
+34: PARAM $t14
+35: CALL PUTI,1
+36: GOTO 40
+37: $t15 := 4 ADDI 2
+38: PARAM $t15
+39: CALL PUTI,1
+40: x := x ADDI 1
+41: GOTO 7
+42: HALT

@@ -1,0 +1,55 @@
+FLEX: Detected mode CALC
+BISON: Starting in mode CALC
+FLEX: SQUARE_BRACKET_OPEN yytex: [
+FLEX: SQUARE_BRACKET_CLOSE yytex: ]
+BISON: EXPRESSION: TYPE: ARRAY VALUE: EMPTY
+FLEX: SQUARE_BRACKET_OPEN yytex: [
+FLEX: INT yytex: 1 -> 1
+FLEX: SQUARE_BRACKET_CLOSE yytex: ]
+BISON: EXPRESSION: TYPE: ARRAY VALUE: 1
+FLEX: ASSIGN yytex: :=
+FLEX: INT yytex: 9 -> 9
+BISON: ASSIGN ID: a TYPE: INT VALUE: 9
+FLEX: ASSIGN yytex: :=
+FLEX: TTRUE yytex: true
+FLEX: AND yytex: and
+FLEX: TFALSE yytex: false
+BISON: Performing and operation
+BISON: ASSIGN ID: b TYPE: BOOL VALUE: false
+FLEX: ASSIGN yytex: :=
+FLEX: SQUARE_BRACKET_OPEN yytex: [
+FLEX: ID yytex: a -> a
+BISON: Looking for ID a
+FLEX: COMMA yytex: ,
+FLEX: INT yytex: 4 -> 4
+FLEX: COMMA yytex: ,
+FLEX: FLOAT yytex: 6.0 -> 6.000000
+FLEX: COMMA yytex: ,
+FLEX: TTRUE yytex: true
+FLEX: COMMA yytex: ,
+FLEX: STRING yytex: afds -> afds
+FLEX: COMMA yytex: ,
+FLEX: ID_B yytex: b -> b
+BISON: Looking for ID b
+FLEX: SQUARE_BRACKET_CLOSE yytex: ]
+BISON: ASSIGN ID: c TYPE: ARRAY VALUE: 9, 4, 6.000000, true, afds, false
+FLEX: ASSIGN yytex: :=
+FLEX: SQUARE_BRACKET_OPEN yytex: [
+FLEX: SQUARE_BRACKET_CLOSE yytex: ]
+BISON: ASSIGN ID: d TYPE: ARRAY VALUE: true
+FLEX: ID yytex: c -> c
+FLEX: SQUARE_BRACKET_OPEN yytex: [
+FLEX: INT yytex: 0 -> 0
+FLEX: SQUARE_BRACKET_CLOSE yytex: ]
+BISON: EXPRESSION: TYPE: INT VALUE: 9
+FLEX: ID yytex: c -> c
+FLEX: SQUARE_BRACKET_OPEN yytex: [
+FLEX: INT yytex: 1 -> 1
+FLEX: SQUARE_BRACKET_CLOSE yytex: ]
+BISON: EXPRESSION: TYPE: INT VALUE: 4
+FLEX: ID yytex: c -> c
+FLEX: SQUARE_BRACKET_OPEN yytex: [
+FLEX: INT yytex: 2 -> 2
+FLEX: SQUARE_BRACKET_CLOSE yytex: ]
+BISON: EXPRESSION: TYPE: FLOAT VALUE: 6.000000
+The compilation has been successful

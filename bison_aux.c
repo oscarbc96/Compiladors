@@ -1,7 +1,7 @@
 #include "bison_aux.h"
 
-char * get_type(uniontype value){
-  switch(value.type){
+char * get_type(uniontype value) {
+  switch (value.type) {
     case BINT:
       return "INT";
       break;
@@ -17,12 +17,12 @@ char * get_type(uniontype value){
   };
 }
 
-char * utype_to_string(uniontype value){
+char * utype_to_string(uniontype value) {
   char *str = malloc(12);
   char *aux = malloc(100);
   uniontype *auxt = &value;
 
-  switch(value.type){
+  switch (value.type) {
     case BINT:
       sprintf(str, "%d", value.intValue);
       break;
@@ -42,7 +42,7 @@ char * utype_to_string(uniontype value){
   return str;
 }
 
-bool reg_matches(char *str, char *pattern){
+bool reg_matches(char *str, char *pattern) {
   regex_t re;
   int ret;
 

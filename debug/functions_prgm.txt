@@ -1,0 +1,23 @@
+FLEX: Detected mode PRGM
+BISON: Starting in mode PRGM
+FLEX: FUNC_SQRT yytex: sqrt
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: INT yytex: 10 -> 10
+FLEX: PARENTHESIS_CLOSE yytex: )
+BISON: Performing sqrt function
+FLEX: FUNC_SQRT yytex: sqrt
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: FLOAT yytex: 10.0 -> 10.000000
+FLEX: PARENTHESIS_CLOSE yytex: )
+BISON: Performing sqrt function
+FLEX: FUNC_LOG yytex: log
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: INT yytex: 10 -> 10
+FLEX: PARENTHESIS_CLOSE yytex: )
+BISON: Performing log function
+FLEX: FUNC_LOG yytex: log
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: FLOAT yytex: 10.0 -> 10.000000
+FLEX: PARENTHESIS_CLOSE yytex: )
+BISON: Performing log function
+The compilation has been successful

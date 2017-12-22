@@ -1,0 +1,89 @@
+FLEX: Detected mode CALC
+BISON: Starting in mode CALC
+FLEX: ASSIGN yytex: :=
+FLEX: INT yytex: 0 -> 0
+BISON: ASSIGN ID: x TYPE: INT VALUE: 0
+FLEX: ID yytex: x -> x
+FLEX: ASSIGN yytex: :=
+FLEX: ID yytex: x -> x
+FLEX: ADD yytex: +
+BISON: Looking for ID x
+FLEX: INT yytex: 1 -> 1
+BISON: Performing add
+BISON: ASSIGN ID: x TYPE: INT VALUE: 1
+FLEX: ASSIGN yytex: :=
+FLEX: FLOAT yytex: 2.0 -> 2.000000
+BISON: ASSIGN ID: a TYPE: FLOAT VALUE: 2.000000
+FLEX: ASSIGN yytex: :=
+FLEX: INT yytex: 5 -> 5
+BISON: ASSIGN ID: b TYPE: INT VALUE: 5
+FLEX: ASSIGN yytex: :=
+FLEX: ID yytex: a -> a
+FLEX: ADD yytex: +
+BISON: Looking for ID a
+FLEX: ID yytex: b -> b
+BISON: Looking for ID b
+BISON: Performing add
+BISON: ASSIGN ID: c TYPE: FLOAT VALUE: 7.000000
+FLEX: ID yytex: c -> c
+FLEX: SUBSTRACT yytex: -
+BISON: Looking for ID c
+FLEX: ID yytex: a -> a
+BISON: Looking for ID a
+BISON: Performing substract
+BISON: EXPRESSION: TYPE: FLOAT VALUE: 5.000000
+FLEX: ASSIGN yytex: :=
+FLEX: ID yytex: c -> c
+FLEX: MULTIPLY yytex: *
+BISON: Looking for ID c
+FLEX: INT yytex: 3 -> 3
+BISON: Performing multiply
+BISON: ASSIGN ID: d TYPE: FLOAT VALUE: 21.000000
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: ID yytex: a -> a
+BISON: Looking for ID a
+FLEX: ADD yytex: +
+FLEX: ID yytex: b -> b
+BISON: Looking for ID b
+FLEX: PARENTHESIS_CLOSE yytex: )
+BISON: Performing add
+FLEX: MULTIPLY yytex: *
+FLEX: INT yytex: 3 -> 3
+BISON: Performing multiply
+BISON: EXPRESSION: TYPE: FLOAT VALUE: 21.000000
+FLEX: INT yytex: 9 -> 9
+FLEX: DIVIDE yytex: /
+FLEX: INT yytex: 3 -> 3
+BISON: Performing divide
+BISON: EXPRESSION: TYPE: INT VALUE: 3
+FLEX: ID yytex: a -> a
+FLEX: POW yytex: **
+BISON: Looking for ID a
+FLEX: INT yytex: 3 -> 3
+BISON: Performing pow
+BISON: EXPRESSION: TYPE: FLOAT VALUE: 8.000000
+FLEX: ID yytex: b -> b
+FLEX: MOD yytex: mod
+BISON: Looking for ID b
+FLEX: INT yytex: 3 -> 3
+BISON: Performing mod
+BISON: EXPRESSION: TYPE: INT VALUE: 2
+FLEX: STRING yytex: test -> test
+FLEX: ADD yytex: +
+FLEX: STRING yytex: - -> -
+FLEX: ADD yytex: +
+BISON: Performing add
+FLEX: STRING yytex: test2 -> test2
+BISON: Performing add
+BISON: EXPRESSION: TYPE: STRING VALUE: test-test2
+FLEX: STRING yytex: 4 + 4 =  -> 4 + 4 = 
+FLEX: ADD yytex: +
+FLEX: PARENTHESIS_OPEN yytex: (
+FLEX: INT yytex: 4 -> 4
+FLEX: ADD yytex: +
+FLEX: INT yytex: 4 -> 4
+FLEX: PARENTHESIS_CLOSE yytex: )
+BISON: Performing add
+BISON: Performing add
+BISON: EXPRESSION: TYPE: STRING VALUE: 4 + 4 = 8
+The compilation has been successful

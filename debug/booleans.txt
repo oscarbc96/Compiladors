@@ -1,0 +1,22 @@
+FLEX: Detected mode CALC
+BISON: Starting in mode CALC
+FLEX: ASSIGN yytex: :=
+FLEX: TFALSE yytex: false
+BISON: ASSIGN ID: a TYPE: BOOL VALUE: false
+FLEX: ASSIGN yytex: :=
+FLEX: TTRUE yytex: true
+BISON: ASSIGN ID: b TYPE: BOOL VALUE: true
+FLEX: ID_B yytex: a -> a
+FLEX: AND yytex: and
+BISON: Looking for ID_B a
+FLEX: ID_B yytex: b -> b
+BISON: Looking for ID_B b
+BISON: Performing and operation
+BISON: EXPRESSION: TYPE: BOOL VALUE: false
+FLEX: ASSIGN yytex: :=
+FLEX: INT yytex: 5 -> 5
+FLEX: COMP yytex: > -> >
+FLEX: INT yytex: 8 -> 8
+BISON: Performing comparation operation
+BISON: ASSIGN ID: c TYPE: BOOL VALUE: false
+The compilation has been successful
